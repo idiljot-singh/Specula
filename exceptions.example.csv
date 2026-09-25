@@ -1,0 +1,5 @@
+cve,asset,status,until,note
+CVE-2021-26855,Mail server (Exchange 2019),patched,,March 2021 security update installed; verified by IT 2021-03-04
+CVE-2020-1472,*,mitigated,2026-12-31,Enforcement mode enabled on all DCs; re-check after DC upgrade
+CVE-2022-41040,Mail server (Exchange 2019),accepted,2026-10-31,Exchange retired in October; OWA blocked at firewall meanwhile
+CVE-2023-27997,Perimeter firewall (FortiGate),patched,2025-01-01,Example of an EXPIRED exception: shows up again for review

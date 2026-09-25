@@ -1,0 +1,19 @@
+# Organisation data: a map of where you are vulnerable. Never commit it.
+profile.yaml
+assets.csv
+third_parties.csv
+exceptions.csv
+*.bak
+cve.db
+cve.db-*
+out/
+run.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local tooling (personal memory / assistant context): never publish
+.nemp/
+CLAUDE.md

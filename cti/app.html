@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="Diljot Singh Johal">
+<title>Specula · CVE Intelligence Console</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v14l-12 7-12-7V9z' fill='%230a1220' stroke='%233ee6a8' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%233ee6a8'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#060a11;--bg2:#0a101b;--card:#0e1624;--card2:#121c2d;--line:#1b2638;--line2:#28364d;
+  --fg:#e6edf6;--mute:#8d9bb0;--dim:#5d6c83;--accent:#3ee6a8;--accent-ink:#04110b;--blue:#5aa9ff;--amber:#ffc233;
+  --act:#ff4d5e;--attend:#ff9f43;--track:#4ea3ff;--ignore:#6b7a90;--ok:#3ee6a8;
+  --glow:0 0 0 1px rgba(62,230,168,.25),0 8px 30px -8px rgba(62,230,168,.25);
+  --sans:"Segoe UI Variable Text","Segoe UI",Inter,system-ui,sans-serif;--mono:"Cascadia Code","JetBrains Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:light){:root{
+  --bg:#f3f5f8;--bg2:#e9edf3;--card:#fff;--card2:#f6f8fb;--line:#dfe5ee;--line2:#cbd4e1;
+  --fg:#0d1624;--mute:#56657b;--dim:#8391a6;--accent:#0f9d6c;--accent-ink:#fff;--blue:#1f6fd1;
+  --act:#d62839;--attend:#d9730d;--track:#1f6fd1;--ignore:#6b7a90;--ok:#0f9d6c;
+  --glow:0 0 0 1px rgba(15,157,108,.25),0 8px 24px -10px rgba(15,157,108,.35)}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--fg);font:14.5px/1.55 var(--sans);min-height:100vh;
+  background:radial-gradient(1200px 600px at 85% -10%,rgba(90,169,255,.10),transparent 60%),
+             radial-gradient(900px 500px at -10% 10%,rgba(62,230,168,.08),transparent 60%),var(--bg)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 70%)}
+body>*{position:relative;z-index:1}
+a{color:var(--blue)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.tlp{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 16px;font:600 11.5px/1.4 var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mute);background:#000;border-bottom:1px solid var(--line)}
+.tlp b{color:#000;background:var(--amber);padding:1px 8px;border-radius:3px}
+@media (prefers-color-scheme:light){.tlp{background:#0d1624;color:#c9d3e0}}
+
+.top{max-width:1240px;margin:0 auto;padding:18px 20px 6px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand svg{width:38px;height:38px;filter:drop-shadow(0 0 10px rgba(62,230,168,.35))}
+.brand small{display:block;font:600 10.5px var(--mono);letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+.brand strong{font-size:21px;letter-spacing:.02em}
+.org{font-size:12.5px;color:var(--mute);border:1px solid var(--line);background:var(--card);padding:4px 10px;border-radius:999px}
+#status{margin-left:auto;display:flex;align-items:center;gap:8px;font:600 12px var(--mono);letter-spacing:.04em;color:var(--mute);
+  border:1px solid var(--line);background:var(--card);padding:5px 12px;border-radius:999px}
+#status i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+#status.busy{color:var(--attend);border-color:rgba(255,159,67,.4)}
+#status.busy i{background:var(--attend);box-shadow:0 0 10px var(--attend);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+
+.layout{max-width:1240px;margin:0 auto;padding:14px 20px 24px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px}
+nav ol{list-style:none;margin:0;padding:0;position:sticky;top:14px}
+nav li{position:relative}
+nav li:not(:last-child)::after{content:"";position:absolute;left:23px;top:44px;bottom:-6px;width:1px;background:var(--line2)}
+nav button{width:100%;display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:center;text-align:left;font:inherit;color:var(--mute);
+  background:none;border:1px solid transparent;border-radius:12px;padding:8px 8px;cursor:pointer;margin-bottom:6px;transition:.15s}
+nav button .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 11.5px var(--mono);
+  border:1px solid var(--line2);background:var(--bg2);color:var(--mute);transition:.15s}
+nav button b{display:block;color:var(--fg);font-weight:600;font-size:14px}
+nav button small{display:block;font:11.5px var(--mono);color:var(--dim)}
+nav button:hover{background:var(--card)}
+nav button[aria-current=step]{background:var(--card);border-color:var(--line)}
+nav button[aria-current=step] .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 0 14px rgba(62,230,168,.5)}
+
+main{min-width:0}
+.panel{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;padding:26px 28px;
+  box-shadow:0 20px 60px -30px rgba(0,0,0,.6)}
+.eyebrow{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.eyebrow span{color:var(--dim)}
+.panel h2{margin:6px 0 6px;font-size:26px;line-height:1.2;letter-spacing:-.02em}
+.lede{font-size:15.5px;color:var(--mute);max-width:72ch;margin:0 0 14px}
+.panel h3{font:600 11.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+.panel h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.panel p{margin:6px 0 10px;max-width:75ch}
+
+.funnel{display:flex;flex-direction:column;gap:8px;margin:18px 0 6px}
+.fl{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:center}
+.fl .bar{height:44px;border-radius:10px;display:flex;align-items:center;padding:0 14px;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 38%,transparent),color-mix(in srgb,var(--c) 12%,transparent));
+  border:1px solid color-mix(in srgb,var(--c) 45%,transparent);box-shadow:inset 3px 0 0 var(--c);animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+.fl .num{font:700 22px var(--mono);letter-spacing:-.02em;text-align:right}
+.fl .num small{display:block;font:500 11px var(--sans);color:var(--dim);letter-spacing:0}
+@keyframes grow{from{width:0!important;opacity:0}}
+.headline{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:baseline;margin-top:12px;padding:14px 18px;border:1px dashed var(--line2);border-radius:12px;background:var(--bg2)}
+.headline b{font:700 30px var(--mono);color:var(--accent);letter-spacing:-.03em}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:10px 0}
+.stat{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--bg2);border-radius:14px;padding:14px 16px}
+.stat::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c,var(--blue));box-shadow:0 0 12px var(--c,var(--blue))}
+.stat b{display:block;font:700 26px var(--mono);letter-spacing:-.03em;margin-bottom:2px}
+.stat span{font-weight:600;font-size:13.5px}.stat small{color:var(--dim);display:block;font-size:12px;margin-top:2px}
+
+button.go,a.go{font:600 14px var(--sans);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 88%,#fff),var(--accent));color:var(--accent-ink);
+  border:0;border-radius:10px;padding:10px 16px;cursor:pointer;text-decoration:none;display:inline-flex;gap:8px;align-items:center;box-shadow:var(--glow);transition:.15s}
+button.go:hover{transform:translateY(-1px)}
+button.ghost,a.ghost{font:600 14px var(--sans);background:var(--bg2);color:var(--fg);border:1px solid var(--line2);border-radius:10px;padding:9px 14px;cursor:pointer;
+  text-decoration:none;display:inline-flex;gap:8px;align-items:center;transition:.15s}
+button.ghost:hover,a.ghost:hover{border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+input,textarea{font:inherit;padding:9px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--bg);color:var(--fg)}
+input{min-width:220px}input[type=date]{min-width:0;color-scheme:dark}
+@media (prefers-color-scheme:light){input[type=date]{color-scheme:light}}
+textarea{width:100%;min-height:210px;font:12.5px/1.55 var(--mono);white-space:pre;overflow-x:auto;tab-size:4}
+details{border:1px solid var(--line);background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+summary{cursor:pointer;font-weight:600}summary .mono{margin-left:4px}
+details[open] summary{margin-bottom:8px}
+code,.mono{font:12.5px var(--mono);background:var(--bg2);border:1px solid var(--line);padding:1px 6px;border-radius:6px}
+.formula{font:13px/1.9 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 18px;overflow-x:auto;white-space:pre}
+.formula .k{color:var(--accent)}.formula .w{color:var(--amber)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--bg2);border-radius:999px;padding:5px 12px 5px 6px;
+  color:var(--fg);text-decoration:none;font-size:13px;transition:.15s}
+.chip:hover{border-color:var(--act)}
+.chip code{background:color-mix(in srgb,var(--act) 18%,transparent);border-color:color-mix(in srgb,var(--act) 40%,transparent);color:var(--act);border-radius:999px;font-size:11px}
+ol.pirs{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:p}
+ol.pirs li{counter-increment:p;display:grid;grid-template-columns:44px 1fr;align-items:start;gap:10px;border:1px solid var(--line);background:var(--bg2);border-radius:12px;padding:10px 14px}
+ol.pirs li::before{content:"PIR " counter(p);font:600 11px var(--mono);color:var(--blue);padding-top:3px}
+
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--bg2)}
+table{border-collapse:collapse;width:100%}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{white-space:nowrap;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);background:var(--card)}
+td.why{color:var(--mute);font-size:12.5px;min-width:280px}td a{white-space:nowrap;font-family:var(--mono);font-size:13px}
+td.asset{min-width:170px}td.risk{min-width:120px;font:600 13px var(--mono)}
+.meter{height:5px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--attend),var(--act))}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font:700 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;
+  color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+ul.tiers{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ul.tiers li{display:grid;grid-template-columns:86px 1fr;gap:10px;align-items:center}
+
+.outputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.out{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);background:var(--bg2);border-radius:14px;padding:14px;color:var(--fg);text-decoration:none;transition:.15s}
+.out:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--glow)}
+.out .badge{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font:700 11px var(--mono);color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.out b{display:block}.out small{color:var(--mute);font-size:12.5px;line-height:1.4;display:block}
+
+.msg{font-size:13px}.msg.err{color:var(--act)}.msg.ok{color:var(--ok)}
+.nav-foot{display:flex;justify-content:space-between;gap:10px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+
+#console{margin-top:18px;background:#05080d;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 20px 50px -30px #000}
+#console .bar{display:flex;gap:12px;align-items:center;padding:10px 14px;background:#0b111b;border-bottom:1px solid #1b2638;font:12px var(--mono);color:#8d9bb0}
+#console .dots{display:flex;gap:6px}#console .dots i{width:10px;height:10px;border-radius:50%;background:#28364d}
+#console .dots i:first-child{background:#ff5f57}#console .dots i:nth-child(2){background:#febc2e}#console .dots i:last-child{background:#28c840}
+#console .bar b{color:#e6edf6;font-weight:600}#jobstate{margin-left:auto}
+#log{margin:0;padding:14px 16px;min-height:74px;max-height:300px;overflow:auto;font:12.5px/1.6 var(--mono);color:#c5d0de;white-space:pre-wrap;word-break:break-word}
+#log .cmd{color:#3ee6a8}#log .err{color:#ff6b78}#log .hint{color:#5d6c83}
+#log.running::after{content:"▋";color:#3ee6a8;animation:pulse 1s steps(1) infinite}
+
+footer{max-width:1240px;margin:0 auto;padding:10px 20px 34px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--dim);font-size:12.5px}
+footer a{color:var(--mute);text-decoration:none;border-bottom:1px dotted var(--line2)}footer a:hover{color:var(--accent)}
+footer .sp{flex:1}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;transition:.25s;z-index:10;
+  background:var(--card2);border:1px solid var(--act);color:var(--fg);padding:10px 16px;border-radius:12px;box-shadow:0 10px 40px -10px #000;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:14px}nav{min-width:0}
+  nav ol{display:flex;overflow-x:auto;gap:6px;position:static;padding-bottom:4px}
+  nav li::after{display:none}nav button{grid-template-columns:28px auto;white-space:nowrap;margin:0}nav button small{display:none}
+  .panel{padding:18px 16px}.panel h2{font-size:22px}.fl{grid-template-columns:minmax(0,1fr) 110px}.fl .num{font-size:18px}
+  .top{padding:14px 16px 4px}.layout,footer{padding-left:16px;padding-right:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="tlp"><b>TLP:AMBER</b> limited disclosure · organisation and clients, need-to-know only</div>
+<header class="top">
+  <a class="brand" href="#0" aria-label="Start here">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2.5l15 8.7v17.6L20 37.5 5 28.8V11.2z" fill="none" stroke="#3ee6a8" stroke-width="1.6"/>
+      <circle cx="20" cy="20" r="9" fill="none" stroke="#5aa9ff" stroke-width="1.2" opacity=".8"/><circle cx="20" cy="20" r="3.2" fill="#3ee6a8"/>
+      <path d="M20 7v6M20 27v6M7 20h6M27 20h6" stroke="#3ee6a8" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <span><small>Threat-informed CVE prioritisation</small><strong>Specula</strong></span>
+  </a>
+  <span class="org" id="org"></span>
+  <span id="status" role="status"><i></i><span>idle</span></span>
+</header>
+<div class="layout">
+  <nav aria-label="Walkthrough steps"><ol id="steps"></ol></nav>
+  <main>
+    <section class="panel" id="panel" aria-live="polite"></section>
+    <section id="console" aria-label="Background job output">
+      <div class="bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><b>behind the scenes</b><span id="jobname">no job run yet</span><span id="jobstate"></span></div>
+      <pre id="log"><span class="hint">Every button runs the real pipeline code in the background. Its output streams here, live.</span></pre>
+    </section>
+  </main>
+</div>
+<footer>
+  <span><b>Specula</b> by Diljot Singh Johal</span>
+  <span>Open source · MIT License</span>
+  <span class="sp"></span>
+  <span>Data: NVD · CISA KEV · FIRST EPSS · MITRE ATT&amp;CK · CTID</span>
+</footer>
+<div id="toast" role="alert"></div>
+<script>
+const TOKEN = "__TOKEN__";
+const TIERS = ["Act", "Attend", "Track", "Ignore"];
+const COLOR = {Act: "--act", Attend: "--attend", Track: "--track", Ignore: "--ignore"};
+let S = null, current = Math.min(7, Math.max(0, parseInt(location.hash.slice(1)) || 0)), polling = null, seen = 0;
+
+// textContent everywhere: CVE descriptions and file contents are never parsed as HTML
+const el = (tag, props = {}, kids = []) => { const e = document.createElement(tag); Object.assign(e, props); e.append(...kids); return e; };
+const p = text => el("p", {textContent: text});
+const h3 = text => el("h3", {textContent: text});
+const fmt = n => n == null ? "n/a" : Number(n).toLocaleString("en-GB");
+const out = name => `/out/${name}?t=${encodeURIComponent(TOKEN)}`;
+const colored = (node, v) => (node.style.setProperty("--c", `var(${v})`), node);
+
+function toast(text) {
+  const t = document.getElementById("toast");
+  t.textContent = text; t.classList.add("show");
+  clearTimeout(t.timer); t.timer = setTimeout(() => t.classList.remove("show"), 4000);
+}
+
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? {headers: {"X-Token": TOKEN}}
+    : {method: "POST", headers: {"X-Token": TOKEN, "Content-Type": "application/json"}, body: JSON.stringify(body)});
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || r.statusText);
+  return data;
+}
+
+function lastRun() {
+  const line = [...(S.log || [])].reverse().find(l => l.includes(" OK ")) || "";
+  const kv = Object.fromEntries(line.split(" ").filter(x => x.includes("=")).map(x => x.split(/=(.*)/s)));
+  return {when: line.split(" ")[0], ...kv};
+}
+
+function stat(label, value, note, color) {
+  return colored(el("div", {className: "stat"}, [el("b", {textContent: value}), el("span", {textContent: label}), note ? el("small", {textContent: note}) : ""]), color || "--blue");
+}
+
+const pill = tier => colored(el("span", {className: "pill", textContent: tier}), COLOR[tier] || "--ignore");
+
+function action(label, name, arg, cls = "go") {
+  const b = el("button", {className: cls, textContent: label, type: "button"});
+  b.dataset.action = "1";
+  b.disabled = !!polling;
+  b.onclick = () => run(name, typeof arg === "function" ? arg() : arg);
+  return b;
+}
+
+function logLine(text) {
+  const log = document.getElementById("log");
+  log.append(el("span", {className: text.startsWith("> ") ? "cmd" : /error|failed|traceback/i.test(text) ? "err" : "", textContent: text + "\n"}));
+}
+
+async function run(name, arg) {
+  try { await api("/api/run", {action: name, arg: arg || ""}); }
+  catch (e) { return toast(e.message); }
+  document.getElementById("log").replaceChildren();
+  seen = 0;
+  document.getElementById("jobname").textContent = name === "pdf" ? "building WALKTHROUGH.pdf" : `running: ${name}`;
+  busy(true);
+  polling = setInterval(poll, 700);
+  poll();
+}
+
+async function poll() {
+  const j = await api(`/api/job?from=${seen}`);
+  const log = document.getElementById("log");
+  j.lines.forEach(logLine);
+  if (j.lines.length) log.scrollTop = log.scrollHeight;
+  seen = j.total;
+  if (!j.running) {
+    clearInterval(polling); polling = null; busy(false);
+    const st = document.getElementById("jobstate");
+    st.textContent = j.code === 0 ? "✓ finished" : `✕ failed (exit ${j.code})`;
+    st.style.color = j.code === 0 ? "#3ee6a8" : "#ff6b78";
+    await refresh();
+  }
+}
+
+function busy(on) {
+  const s = document.getElementById("status");
+  s.lastChild.textContent = on ? "working in the background" : "idle";
+  s.classList.toggle("busy", on);
+  document.getElementById("log").classList.toggle("running", on);
+  if (on) { document.getElementById("jobstate").textContent = "running"; document.getElementById("jobstate").style.color = ""; }
+  document.querySelectorAll("[data-action]").forEach(b => b.disabled = on);
+}
+
+function editor(name, hint) {
+  const box = el("details");
+  const area = el("textarea", {spellcheck: false, ariaLabel: name});
+  const msg = el("span", {className: "msg"});
+  const save = el("button", {className: "go", textContent: `Save ${name}`, type: "button"});
+  save.onclick = async () => {
+    try { await api("/api/file", {name, text: area.value}); msg.className = "msg ok"; msg.textContent = "Saved. The previous version is kept as .bak. Re-rank to see the effect."; }
+    catch (e) { msg.className = "msg err"; msg.textContent = e.message; }
+  };
+  box.ontoggle = async () => {
+    if (!box.open || area.dataset.loaded) return;
+    const f = await api(`/api/file?name=${name}`);
+    area.value = f.text; area.dataset.loaded = 1;
+    if (!f.exists) { msg.className = "msg"; msg.textContent = "This file doesn't exist yet, so the example is shown. Save to create it."; }
+  };
+  box.append(el("summary", {}, ["Edit ", el("span", {className: "mono", textContent: name})]), hint ? p(hint) : "", area, el("div", {className: "row"}, [save, msg]));
+  return box;
+}
+
+function topTable(rows) {
+  const max = Math.max(...rows.map(r => +r.risk), 0.001);
+  const head = el("tr", {}, ["#", "Tier", "Risk", "Likelihood", "Impact", "CVE", "Asset", "Why: every term of the score"].map(t => el("th", {textContent: t})));
+  const body = rows.map(r => el("tr", {}, [
+    el("td", {textContent: r.rank}), el("td", {}, [pill(r.tier)]),
+    el("td", {className: "risk"}, [r.risk, el("div", {className: "meter"}, [Object.assign(el("i"), {style: `width:${(100 * r.risk / max).toFixed(0)}%`})])]),
+    el("td", {textContent: r.likelihood}), el("td", {textContent: r.impact}),
+    el("td", {}, [el("a", {href: "https://nvd.nist.gov/vuln/detail/" + encodeURIComponent(r.cve), textContent: r.cve, target: "_blank", rel: "noopener"})]),
+    el("td", {className: "asset", textContent: r.asset}), el("td", {className: "why", textContent: r.why})]));
+  return el("div", {className: "wrap"}, [el("table", {}, [el("thead", {}, [head]), el("tbody", {}, body)])]);
+}
+
+function funnel() {
+  const r = lastRun(), t = S.tiers;
+  const levels = [
+    ["Published CVEs, worldwide", S.db.cve, "NVD", "--ignore"],
+    ["Affect our assets or suppliers", +r.findings || 0, "CPE + version match", "--track"],
+    ["Exploited, or likely to be", (t.Act || 0) + (t.Attend || 0), "KEV · EPSS · threat groups", "--attend"],
+    ["Act within 48 hours", t.Act || 0, "SSVC decision", "--act"]];
+  const top = Math.log10(Math.max(levels[0][1], 10));
+  const rows = levels.map(([label, n, src, c], i) => {
+    const w = n ? 26 + 74 * Math.log10(Math.max(n, 1)) / top : 26;
+    const bar = colored(el("div", {className: "bar", textContent: label}), c);
+    bar.style.width = w.toFixed(1) + "%"; bar.style.animationDelay = i * 0.12 + "s";
+    return el("div", {className: "fl"}, [el("div", {}, [bar]), el("div", {className: "num"}, [fmt(n), el("small", {textContent: src})])]);
+  });
+  const cut = S.db.cve && t.Act ? (100 * (1 - t.Act / S.db.cve)).toFixed(2) + "%" : "n/a";
+  return [el("div", {className: "funnel"}, rows),
+    el("div", {className: "headline"}, [el("b", {textContent: cut}), el("span", {textContent: "of the global CVE volume filtered out before anyone has to act. What's left is ranked, explained, and tied to a named adversary where one exists."})])];
+}
+
+const STEPS = [
+  {title: "Start here", stage: "Overview", file: "mission brief", render(P) {
+    const r = lastRun();
+    P.append(
+      el("p", {className: "lede", textContent: "About 40,000 CVEs are published every year, and the usual severity scores can't tell an organisation which ones will actually be used against it. This console narrows every CVE in the world down to the few that matter to one organisation, and shows the reason for every decision."}),
+      ...funnel(),
+      h3("How it works"),
+      p("Each step on the left is one stage of the Cyber Threat Intelligence (CTI) lifecycle: Direction, Collection, Processing, Analysis, Dissemination and Feedback. Each one explains what it does, shows its live data, and has a button that runs the real code. The terminal below shows everything the code prints while it works."),
+      el("div", {className: "stats"}, [
+        stat("CVEs in the local database", fmt(S.db.cve), S.db.nvd_sync ? `full NVD sync ${S.db.nvd_sync.slice(0, 10)}` : "no full sync yet"),
+        stat("Last pipeline run", r.when ? r.when.slice(0, 10) : "never", r.when ? r.when.slice(11, 16) + " UTC" : "run step 4", "--accent")]),
+      h3("First try"),
+      p("Run the offline test suite. It checks every stage's logic on fixed sample data, needs no network, and takes a few seconds."),
+      el("div", {className: "row"}, [action("▶  Run the offline tests", "test")]));
+  }},
+  {title: "Direction", stage: "Stage 01", file: "profile.yaml", render(P) {
+    const pr = S.profile, o = pr.organisation;
+    P.append(
+      el("p", {className: "lede", textContent: "Intelligence starts with a direction: who we are, what we need to know, and who is likely to come after us. A person writes this once and reviews it every quarter. Every number the pipeline later uses to decide is in this one file."}),
+      el("div", {className: "stats"}, [stat("Organisation", o.name, `${o.sector} · ${o.country}`), stat("Adversaries tracked", Object.keys(pr.threat_groups).length, "MITRE ATT&CK groups", "--act")]),
+      h3("Priority Intelligence Requirements"),
+      el("ol", {className: "pirs"}, pr.pirs.map(q => el("li", {textContent: q}))),
+      h3("Threat profile"),
+      el("div", {className: "chips"}, Object.entries(pr.threat_groups).map(([id, n]) =>
+        el("a", {className: "chip", href: `https://attack.mitre.org/groups/${encodeURIComponent(id)}/`, target: "_blank", rel: "noopener"}, [el("code", {textContent: id}), n]))),
+      h3("Tune it"),
+      editor("profile.yaml", "Change a weight or add a group, save, then open Analysis and press Re-rank to see how the ranking moves."));
+  }},
+  {title: "Collection", stage: "Stage 02", file: "cti/collect.py", render(P) {
+    const d = S.db;
+    const def = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+    const since = el("input", {type: "date", value: def, ariaLabel: "Sync CVEs changed since"});
+    P.append(
+      el("p", {className: "lede", textContent: "Five public intelligence feeds go into one local SQLite database. Nothing is scored yet: this is the raw material. A feed that comes back suspiciously small is rejected, so a broken or poisoned download can't wipe good data."}),
+      el("div", {className: "stats"}, [
+        stat("NVD vulnerabilities", fmt(d.cve), "every CVE: severity, weakness, products"),
+        stat("CISA KEV", fmt(d.kev), "proven exploited in the wild", "--act"),
+        stat("FIRST EPSS", fmt(d.epss), "chance of exploitation in 30 days", "--attend"),
+        stat("ATT&CK techniques", fmt(d.technique), `${fmt(d.actor)} adversary groups`, "--accent"),
+        stat("CTID mappings", fmt(d.cve_technique), "CVE → attacker technique", "--track")]),
+      h3("Refresh the feeds"),
+      p("Quick sync pulls only the CVEs NVD changed since a date, which takes a minute or two. Full sync downloads all of NVD the first time (about 15 minutes without an API key) and only the changes after that. Both also refresh KEV, EPSS, ATT&CK and CTID."),
+      el("div", {className: "row"}, [since, action("⟳  Quick sync since this date", "since", () => since.value), action("Full sync", "full", "", "ghost")]));
+  }},
+  {title: "Processing", stage: "Stage 03", file: "cti/process.py", render(P) {
+    const term = el("input", {placeholder: "e.g. fortios, exchange, moveit", ariaLabel: "Product name"});
+    const hits = el("div");
+    const find = el("button", {className: "ghost", textContent: "⌕  Find product name", type: "button"});
+    find.onclick = async () => {
+      hits.replaceChildren(el("span", {className: "msg", textContent: "Searching 400,000 CVEs…"}));
+      try {
+        const r = await api(`/api/cpe?term=${encodeURIComponent(term.value)}`);
+        hits.replaceChildren(r.hits.length ? el("div", {className: "chips"}, r.hits.map(([cpe, n]) => el("span", {className: "chip"}, [el("code", {textContent: fmt(n)}), cpe])))
+          : el("span", {className: "msg", textContent: "No product with that name in NVD."}));
+      } catch (e) { hits.replaceChildren(el("span", {className: "msg err", textContent: e.message})); }
+    };
+    term.onkeydown = e => { if (e.key === "Enter") find.click(); };
+    P.append(
+      el("p", {className: "lede", textContent: "This is where the global feed meets the organisation. Each asset we own, and each supplier we depend on, is described by its CPE, the product name NVD uses. Any CVE whose affected-product list covers that name and version becomes a finding."}),
+      p(`We can't see a supplier's patch level, so for suppliers only CVEs from the last ${S.profile.third_party.recent_days} days (or newly added to KEV) count. That answers the question "is my supplier under attack right now?".`),
+      h3("CPE lookup"),
+      el("div", {className: "row"}, [term, find]), hits,
+      h3("Estate"),
+      editor("assets.csv", "Columns: name, cpe, version, criticality (1-3), internet_facing (y/n)."),
+      editor("third_parties.csv", "Columns: name, cpe, version (often blank), type, data_access (none/internal/confidential), privileged (y/n), internet_facing (y/n)."));
+  }},
+  {title: "Analysis", stage: "Stage 04", file: "cti/analyse.py", render(P) {
+    const w = S.profile.weights, x = S.profile.exposure, t = S.profile.tiers;
+    const f = el("div", {className: "formula"});
+    [["likelihood", ` = ${w.epss}`, "·EPSS + ", `${w.kev}`, "·inKEV + ", `${w.ransomware}`, "·ransomware + ", `${w.threat_profile}`, "·threat_overlap\n"],
+     ["impact    ", " = CVSS/10 · criticality (or supplier blast radius) · ", `${x.internet}`, " if internet-facing else ", `${x.internal}`, "\n"],
+     ["risk      ", " = likelihood · impact"]].forEach(([k, ...rest]) => {
+      f.append(el("span", {className: "k", textContent: k}));
+      rest.forEach(s => f.append(/^[\d.]+$/.test(s) || /^ = [\d.]+$/.test(s) ? el("span", {className: "w", textContent: s}) : s));
+    });
+    P.append(
+      el("p", {className: "lede", textContent: "Every finding gets a risk score that can be explained term by term. No AI is involved: the same inputs always produce the same ranking, which is what makes the result defensible."}),
+      f,
+      h3("Decision tiers (SSVC)"),
+      el("ul", {className: "tiers"}, [
+        el("li", {}, [pill("Act"), el("span", {textContent: "Exploited, and internet-facing or most critical. Patch within 48 hours."})]),
+        el("li", {}, [pill("Attend"), el("span", {textContent: `Exploited, or EPSS ≥ ${t.attend_epss}. Next patch cycle.`})]),
+        el("li", {}, [pill("Track"), el("span", {textContent: `EPSS ≥ ${t.track_epss} or CVSS ≥ ${t.track_cvss}. Watch.`})]),
+        el("li", {}, [pill("Ignore"), el("span", {textContent: "Everything else."})])]),
+      el("div", {className: "row"}, [action("▶  Re-rank now (no download)", "rank")]),
+      h3("Top 10 right now"),
+      S.top.length ? topTable(S.top) : p("No report yet: press Re-rank."));
+  }},
+  {title: "Dissemination", stage: "Stage 05", file: "cti/disseminate.py", render(P) {
+    const kinds = [["dashboard.html", "HTML", "Analyst dashboard", "Search, filter and sort every finding"],
+      ["report.md", "MD", "Intelligence report", "Decision summary, threat hits, ATT&CK view"],
+      ["brief.md", "BRIEF", "Management brief", "One page, written for non-technical readers"],
+      ["report.csv", "CSV", "Spreadsheet", "Every finding with every score term"],
+      ["bundle.json", "STIX", "STIX 2.1 bundle", "Import into MISP, OpenCTI or Sentinel"]];
+    const cards = kinds.filter(([n]) => S.outputs[n]).map(([n, badge, title, sub]) =>
+      el("a", {className: "out", href: out(n), target: "_blank", rel: "noopener"}, [el("span", {className: "badge", textContent: badge}), el("span", {}, [el("b", {textContent: title}), el("small", {textContent: sub})])]));
+    P.append(
+      el("p", {className: "lede", textContent: "The same ranking goes out in five forms for five audiences, from analysts to management to other intelligence platforms. Everything is marked TLP:AMBER."}),
+      el("div", {className: "stats"}, TIERS.map(t => stat(t, fmt(S.tiers[t] || 0), {Act: "within 48 h", Attend: "next patch cycle", Track: "watch", Ignore: "no action"}[t], COLOR[t]))),
+      h3("Products"),
+      cards.length ? el("div", {className: "outputs"}, cards) : p("No outputs yet: run Analysis."));
+  }},
+  {title: "Feedback", stage: "Stage 06", file: "exceptions.csv", render(P) {
+    const r = lastRun();
+    P.append(
+      el("p", {className: "lede", textContent: "Analysts close the loop. A CVE that is patched, mitigated, accepted, a false positive, or confirmed not affected is recorded here and drops out of the next ranking. Exceptions can expire, and when one does, the finding comes back for review, so nothing is silenced forever."}),
+      el("div", {className: "stats"}, [stat("Suppressed last run", fmt(r.suppressed), "analyst decisions applied", "--accent"), stat("Expired, back for review", fmt(r.expired), "", "--attend")]),
+      editor("exceptions.csv", "Columns: cve, asset (exact name, or * for all), status (patched/mitigated/accepted/false_positive/not_affected), until (YYYY-MM-DD or blank), note."),
+      el("div", {className: "row"}, [action("▶  Re-rank with these exceptions", "rank")]),
+      h3("Audit trail · run.log"),
+      el("div", {className: "formula", textContent: S.log.join("\n") || "No runs yet."}));
+  }},
+  {title: "Walkthrough", stage: "Docs", file: "WALKTHROUGH.pdf", render(P) {
+    P.append(
+      el("p", {className: "lede", textContent: "The full written walkthrough as a printable PDF: what was built in each phase, why, and the verified results. It is rebuilt from WALKTHROUGH.md, so it always matches the latest text."}),
+      el("div", {className: "row"}, [action("⤓  Build the PDF", "pdf"),
+        S.pdf ? el("a", {className: "ghost", href: out("WALKTHROUGH.pdf").replace("/out/", "/"), target: "_blank", rel: "noopener", textContent: "Open WALKTHROUGH.pdf ↗"}) : ""]));
+  }},
+];
+
+function show(i) {
+  current = i;
+  history.replaceState(null, "", "#" + i);
+  document.querySelectorAll("#steps button").forEach((b, j) => b.setAttribute("aria-current", j === i ? "step" : "false"));
+  const P = document.getElementById("panel"), s = STEPS[i];
+  P.replaceChildren(el("div", {className: "eyebrow"}, [s.stage + " ", el("span", {textContent: "· " + s.file})]), el("h2", {textContent: s.title}));
+  s.render(P);
+  const prev = i ? el("button", {className: "ghost", textContent: "← " + STEPS[i - 1].title, type: "button", onclick: () => show(i - 1)}) : el("span");
+  const next = i < STEPS.length - 1 ? el("button", {className: "go", textContent: STEPS[i + 1].title + " →", type: "button", onclick: () => show(i + 1)}) : el("span");
+  P.append(el("div", {className: "nav-foot"}, [prev, next]));
+}
+
+async function refresh() {
+  S = await api("/api/state");
+  document.getElementById("org").textContent = `${S.profile.organisation.name} · ${S.profile.organisation.country}`;
+  const ol = document.getElementById("steps");
+  if (!ol.children.length)
+    STEPS.forEach((s, i) => ol.append(el("li", {}, [el("button", {type: "button", onclick: () => show(i)},
+      [el("span", {className: "n", textContent: String(i).padStart(2, "0")}), el("span", {}, [el("b", {textContent: s.title}), el("small", {textContent: s.file})])])])));
+  show(current);
+}
+window.onhashchange = () => { const i = parseInt(location.hash.slice(1)); if (i >= 0 && i < STEPS.length && i !== current) show(i); };
+
+refresh().then(async () => {  // a job started before a page reload keeps streaming
+  const j = await api("/api/job?from=0");
+  if (j.running) { busy(true); polling = setInterval(poll, 700); document.getElementById("jobname").textContent = `running: ${j.name}`; }
+});
+</script></body></html>

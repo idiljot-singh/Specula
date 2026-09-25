@@ -1,0 +1,7 @@
+name,cpe,version,criticality,internet_facing
+Mail server (Exchange 2019),cpe:2.3:a:microsoft:exchange_server,2019,3,y
+File server (Windows Server 2019),cpe:2.3:o:microsoft:windows_server_2019,10.0.17763.5329,3,n
+Intranet (SharePoint Server 2019),cpe:2.3:a:microsoft:sharepoint_server,2019,2,n
+Project DB (SQL Server 2019),cpe:2.3:a:microsoft:sql_server,2019,2,n
+Perimeter firewall (FortiGate),cpe:2.3:o:fortinet:fortios,7.2.4,3,y
+Staff browsers (Edge),cpe:2.3:a:microsoft:edge_chromium,120.0.2210.61,1,n

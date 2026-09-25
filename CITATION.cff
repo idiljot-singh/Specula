@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use Specula in research or in your organisation, please cite it."
+title: "Specula: threat-informed CVE prioritisation"
+abstract: >-
+  An explainable Cyber Threat Intelligence pipeline that narrows every published CVE to the ones
+  that matter to one organisation, using owned assets, third-party suppliers and an adversary
+  threat profile (CISA KEV, FIRST EPSS, MITRE ATT&CK, CTID), with SSVC decision tiers and STIX 2.1 output.
+authors:
+  - family-names: Johal
+    given-names: Diljot Singh
+license: MIT
+version: 1.0.0
+date-released: 2026-09-26
+keywords: [cyber threat intelligence, vulnerability management, CVE, EPSS, KEV, MITRE ATT&CK, STIX, SSVC]

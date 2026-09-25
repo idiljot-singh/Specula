@@ -1,0 +1,76 @@
+# Specula profile: CTI stage 1, Direction. Who we are, who targets us, what we need to know.
+#
+# Copy this file to profile.yaml and edit the copy:  copy profile.example.yaml profile.yaml
+# profile.yaml is git-ignored (it describes your organisation). The test suite reads THIS file,
+# so leave it unchanged. Every number the pipeline uses to decide lives here. Review quarterly.
+# Step-by-step instructions: CUSTOMISE.md
+
+organisation:
+  name: Example Organisation
+  sector: Example sector          # e.g. Manufacturing, Healthcare, Finance, Engineering
+  country: Example country        # used in reports and in the optional LLM brief
+
+# Priority Intelligence Requirements: the questions this pipeline answers
+pirs:
+  - Which actively exploited vulnerabilities affect our internet-facing systems?
+  - Which vulnerabilities are used by threat groups that target our sector or region?
+  - Which of our suppliers run products that are under active attack?
+  - What would an attacker achieve (ATT&CK tactics) through our open vulnerabilities?
+
+# Adversaries relevant to you: MITRE ATT&CK group IDs (https://attack.mitre.org/groups/).
+# This starter set holds widely active espionage and ransomware groups. Replace it with the groups
+# your national CERT, sector ISAC or threat reports name for your sector and region.
+threat_groups:
+  G0007: APT28              # state espionage; government, defence, critical infrastructure
+  G0016: APT29              # state espionage; governments, IT and cloud supply chain
+  G0096: APT41              # espionage + financially motivated; technology, manufacturing, healthcare
+  G0034: Sandworm Team      # destructive operations against energy and critical infrastructure
+  G1024: Akira              # ransomware; mass exploitation of VPN appliances
+  G0102: Wizard Spider      # ransomware (Conti/Ryuk); broad targeting of businesses
+  G0092: TA505              # Cl0p ransomware; mass exploitation of file-transfer products
+  G1015: Scattered Spider   # social engineering + ransomware against help desks and MSPs
+
+# likelihood = epss*w.epss + inKEV*w.kev + ransomware*w.ransomware + threat_overlap*w.threat_profile
+weights:
+  epss: 0.4
+  kev: 0.3
+  ransomware: 0.1
+  threat_profile: 0.2   # 1.0 if a profiled group is known to exploit the CVE, 0.5 if it enables their techniques
+
+exposure:               # impact multiplier
+  internet: 1.5
+  internal: 1.0
+
+third_party:
+  recent_days: 90       # unknown supplier version: only CVEs published or KEV-added this recently
+  data_access: {none: 1.0, internal: 1.5, confidential: 2.0}
+  privileged: 1.5       # supplier has admin or remote access into our network
+
+# SSVC-style decision tiers (checked top to bottom)
+#   Act:    exploited (KEV or profiled group) AND (internet-facing OR weight >= 3)  -> patch within 48 h
+#   Attend: exploited, or EPSS >= attend_epss                                       -> next patch cycle
+#   Track:  EPSS >= track_epss or CVSS >= track_cvss                                -> watch
+#   Ignore: everything else
+tiers:
+  attend_epss: 0.1
+  track_epss: 0.01
+  track_cvss: 7.0
+
+# Optional LLM: writes out/brief.md for management. It never scores or ranks.
+#   none         deterministic template, offline (default)
+#   ollama       local model:  provider: ollama, model: llama3.1, url: http://localhost:11434
+#   azure_openai tenant-hosted: endpoint: https://<name>.openai.azure.com, deployment: <name>,
+#                api_version: 2024-10-21   (key: AZURE_OPENAI_KEY in Credential Manager, see cti/vault.py)
+#   anthropic    Claude API:    model: claude-opus-5   (key: ANTHROPIC_API_KEY in Credential Manager)
+# Cloud providers receive redacted input (no hostnames, IPs or asset names).
+llm:
+  provider: none
+
+# Microsoft Defender for Endpoint: live asset inventory + per-device patch status (optional).
+# Setup steps are at the top of cti/defender.py. assets.csv stays for what Defender can't see.
+defender:
+  enabled: false
+  tenant_id: ""
+  client_id: ""
+  certificate: ""       # path to the PEM (private key + certificate), readable only by the service account
+  thumbprint: ""        # certificate thumbprint shown in Entra ID after upload
