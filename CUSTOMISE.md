@@ -1,4 +1,4 @@
-# Customising Specula for your organisation
+# Customising Stenwatch for your organisation
 
 Everything organisation-specific lives in **four data files** and **one profile**. For most organisations you don't need to touch any code. Work through the steps in order. Each one ends with a check, so you know it worked before you move on.
 
@@ -11,7 +11,7 @@ Everything organisation-specific lives in **four data files** and **one profile*
 
 Your copies are **git-ignored on purpose**. Together they are a map of where your organisation is vulnerable. Never commit them to a public repository. The `*.example.*` files are templates, and the test suite reads `profile.example.yaml`, so leave the examples unchanged.
 
-> You can do every step below either in a text editor or in the Specula console (`python app.py`), which has an editor for each file and refuses to save a file that would break the pipeline.
+> You can do every step below either in a text editor or in the Stenwatch console (`python app.py`), which has an editor for each file and refuses to save a file that would break the pipeline.
 
 ---
 
@@ -98,7 +98,7 @@ python run.py --suggest-cpe fortios
 Or use **Processing → CPE lookup** in the console. Pick the prefix with the most CVEs. `a` = application, `o` = operating system, `h` = hardware.
 
 ### Where to get the list
-- **Microsoft Defender for Endpoint:** Specula can pull the inventory automatically (Step 6).
+- **Microsoft Defender for Endpoint:** Stenwatch can pull the inventory automatically (Step 6).
 - Otherwise, use your CMDB or asset register, a software-inventory export, or the licence list. Start with internet-facing systems and crown jewels. A short, accurate list beats a long, vague one.
 
 **Check:** run `python run.py --skip-collect` (after Step 5's first data sync). A row with a bad `cpe` is rejected with its name, and each asset should produce findings.
@@ -154,7 +154,7 @@ After this, each run fetches only the changes, which takes 1–2 minutes.
 
 **Get a free NVD API key** (about 10× faster): request one at <https://nvd.nist.gov/developers/request-an-api-key>, then store it in the operating system's credential store, never in a file:
 ```bash
-python -c "import keyring; keyring.set_password('specula', 'NVD_API_KEY', input('key: '))"
+python -c "import keyring; keyring.set_password('stenwatch', 'NVD_API_KEY', input('key: '))"
 ```
 
 ---
@@ -173,10 +173,10 @@ Set `llm.provider` in `profile.yaml`: `none` (default, offline template), `ollam
 
 **Windows** (Task Scheduler, as a dedicated low-privilege service account):
 ```powershell
-schtasks /Create /TN "Specula" /SC DAILY /ST 06:00 /RU "DOMAIN\svc-specula" /RP * `
-  /TR "\"C:\Program Files\Python314\python.exe\" \"C:\Specula\run.py\""
+schtasks /Create /TN "Stenwatch" /SC DAILY /ST 06:00 /RU "DOMAIN\svc-stenwatch" /RP * `
+  /TR "\"C:\Program Files\Python314\python.exe\" \"C:\Stenwatch\run.py\""
 ```
-**Linux** (cron, as a dedicated user): `0 6 * * * /usr/bin/python3 /opt/specula/run.py`
+**Linux** (cron, as a dedicated user): `0 6 * * * /usr/bin/python3 /opt/stenwatch/run.py`
 
 Every run appends one line to `run.log`, including failures. Store secrets while logged in as the service account, because credential stores are per-user.
 
@@ -188,11 +188,11 @@ The data folder holds a map of your weaknesses:
 1. **Restrict the folder** to the service account, the analyst group and administrators.
    Windows (as admin):
    ```powershell
-   $p = "C:\Specula"
+   $p = "C:\Stenwatch"
    icacls $p /inheritance:r
-   icacls $p /grant:r "DOMAIN\svc-specula:(OI)(CI)M" "DOMAIN\CTI-Analysts:(OI)(CI)R" "SYSTEM:(OI)(CI)F" "Administrators:(OI)(CI)F"
+   icacls $p /grant:r "DOMAIN\svc-stenwatch:(OI)(CI)M" "DOMAIN\CTI-Analysts:(OI)(CI)R" "SYSTEM:(OI)(CI)F" "Administrators:(OI)(CI)F"
    ```
-   Linux: `chown -R svc-specula:cti-analysts /opt/specula && chmod -R o-rwx /opt/specula`
+   Linux: `chown -R svc-stenwatch:cti-analysts /opt/stenwatch && chmod -R o-rwx /opt/stenwatch`
 2. **Encrypt the disk** (BitLocker, LUKS or FileVault).
 3. **Keep the console local.** `app.py` listens on `127.0.0.1` only. Don't expose it on a network without adding authentication and HTTPS in front of it.
 4. **Treat outputs as TLP:AMBER.** Share them on a need-to-know basis.

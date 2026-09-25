@@ -1,4 +1,4 @@
-"""Specula: run the CTI pipeline.
+"""Stenwatch: run the CTI pipeline.
 
 python run.py                        collect feeds, match assets.csv (+ third_parties.csv), write out/
 python run.py --skip-collect         reuse cve.db as-is (fast, for trying out assets.csv or profile.yaml changes)

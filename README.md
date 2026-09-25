@@ -1,6 +1,6 @@
 <div align="center">
 
-# Specula
+# Stenwatch
 
 **Threat-informed CVE prioritisation.**
 From every CVE in the world to the few that matter to *your* organisation, with a reason for every decision.
@@ -12,15 +12,15 @@ From every CVE in the world to the few that matter to *your* organisation, with 
 
 </div>
 
-*Specula* is Latin for a watchtower. It watches the global vulnerability feed and tells you what, in your estate, needs action now, and why.
+*Stenwatch* is a narrow watch: it watches the whole global vulnerability feed and narrows it to what, in your estate, needs action now, and why.
 
-**[Live page →](https://idiljot-singh.github.io/Specula/)**
+**[Live page →](https://idiljot-singh.github.io/Stenwatch/)**
 
 ## Showcase
 
 A dark, futuristic interface: the console is a funnel that narrows every CVE in the world down to the few that need action, and a dotted "thinking orb" scrambles and clicks back into place while the pipeline works.
 
-![Specula console: the step rail is a funnel from broad to precise, with live counts per stage](docs/img/console.png)
+![Stenwatch console: the step rail is a funnel from broad to precise, with live counts per stage](docs/img/console.png)
 
 | Analyst dashboard | Public landing page |
 |---|---|
@@ -30,7 +30,7 @@ A dark, futuristic interface: the console is a funnel that narrows every CVE in 
 
 ## Why
 
-About 40,000 CVEs are published every year. Most teams rank them by CVSS, which measures how bad a flaw *could* be, not whether anyone is using it against *you*. Specula answers three questions instead:
+About 40,000 CVEs are published every year. Most teams rank them by CVSS, which measures how bad a flaw *could* be, not whether anyone is using it against *you*. Stenwatch answers three questions instead:
 
 1. **Do we run it?** Owned assets are matched to every CVE by product (CPE) and version.
 2. **Do our suppliers run it?** MSPs, SaaS and partners are scored by blast radius: the data they hold and the access they have.
@@ -80,9 +80,9 @@ python run.py --suggest-cpe exchange    # find the NVD product name for the cpe 
 
 | Document | Read it to… |
 |---|---|
-| [CUSTOMISE.md](CUSTOMISE.md) | Set Specula up for **your** organisation, step by step, with a checklist |
+| [CUSTOMISE.md](CUSTOMISE.md) | Set Stenwatch up for **your** organisation, step by step, with a checklist |
 | [WALKTHROUGH.md](WALKTHROUGH.md) ([PDF](WALKTHROUGH.pdf)) | Understand how every stage works and why |
-| [SECURITY.md](SECURITY.md) | Report a vulnerability in Specula |
+| [SECURITY.md](SECURITY.md) | Report a vulnerability in Stenwatch |
 
 ## How it works
 
@@ -103,11 +103,11 @@ risk       = likelihood · impact
 
 ## Your data stays yours
 
-Specula runs entirely on your machine. `profile.yaml`, the asset, supplier and exception lists, the database and all outputs are **git-ignored**: they describe where your organisation is vulnerable. Only public feeds are downloaded; nothing about your estate is sent anywhere unless you enable a cloud LLM for the brief, and even then the input is redacted.
+Stenwatch runs entirely on your machine. `profile.yaml`, the asset, supplier and exception lists, the database and all outputs are **git-ignored**: they describe where your organisation is vulnerable. Only public feeds are downloaded; nothing about your estate is sent anywhere unless you enable a cloud LLM for the brief, and even then the input is redacted.
 
 ## Author
 
-**Specula** is created and maintained by **Diljot Singh Johal**.
+**Stenwatch** is created and maintained by **Diljot Singh Johal**.
 
 If you use it in research or in your organisation, please cite it (see [CITATION.cff](CITATION.cff)).
 

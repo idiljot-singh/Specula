@@ -1,8 +1,8 @@
-# Specula Walkthrough
+# Stenwatch Walkthrough
 
-*Specula* (Latin: a watchtower) is a small, explainable Cyber Threat Intelligence (CTI) pipeline. It takes **every published CVE in the world** and narrows it down to the few that matter to **one organisation**, and it writes down the reason for every decision.
+*Stenwatch* (from Greek *stenos*, narrow: a watch that narrows everything down) is a small, explainable Cyber Threat Intelligence (CTI) pipeline. It takes **every published CVE in the world** and narrows it down to the few that matter to **one organisation**, and it writes down the reason for every decision.
 
-This walkthrough explains how it works, one CTI lifecycle stage at a time. It is written for security analysts, IT managers and students. You can read it on its own, or next to the Specula console (`python app.py`), which has one screen per section below. To set Specula up for your own organisation, follow [CUSTOMISE.md](CUSTOMISE.md).
+This walkthrough explains how it works, one CTI lifecycle stage at a time. It is written for security analysts, IT managers and students. You can read it on its own, or next to the Stenwatch console (`python app.py`), which has one screen per section below. To set Stenwatch up for your own organisation, follow [CUSTOMISE.md](CUSTOMISE.md).
 
 ---
 
@@ -14,7 +14,7 @@ About 40,000 CVEs are published every year, and hundreds of thousands are on rec
 - whether a **supplier** runs it on the organisation's behalf,
 - whether anyone is **actually exploiting** it, and whether that someone is interested in *this* organisation.
 
-Research behind EPSS shows that only a small share of CVEs is ever exploited. Patching by CVSS alone means spending most of the effort on flaws nobody uses. Specula replaces the question *"how severe is it?"* with ***"is it being used, by whom, against something we own or depend on?"***. That shift is intelligence-led vulnerability management.
+Research behind EPSS shows that only a small share of CVEs is ever exploited. Patching by CVSS alone means spending most of the effort on flaws nobody uses. Stenwatch replaces the question *"how severe is it?"* with ***"is it being used, by whom, against something we own or depend on?"***. That shift is intelligence-led vulnerability management.
 
 ---
 
@@ -39,7 +39,7 @@ Research behind EPSS shows that only a small share of CVEs is ever exploited. Pa
 
 ## 3. The pipeline at a glance
 
-Specula follows the classic CTI lifecycle. Each stage is one file, so the code reads like the process:
+Stenwatch follows the classic CTI lifecycle. Each stage is one file, so the code reads like the process:
 
 | Stage | File | Input → Output |
 |---|---|---|
@@ -182,7 +182,7 @@ Every exception can have an **expiry date**. When it passes, the finding returns
 
 ---
 
-## 10. The Specula console (`app.py`)
+## 10. The Stenwatch console (`app.py`)
 
 `python app.py` opens `http://127.0.0.1:8765`. It has one screen per stage above, live numbers from `cve.db`, a funnel from *all CVEs* to *act within 48 h*, file editors, and buttons that run the real pipeline in the background. A terminal panel streams everything the code prints.
 
@@ -203,7 +203,7 @@ It is safe by design:
 
 ## 11. Security of the pipeline itself
 
-Specula holds a map of which vulnerable software runs where, which makes it a target itself.
+Stenwatch holds a map of which vulnerable software runs where, which makes it a target itself.
 
 | Threat | Control |
 |---|---|
@@ -242,4 +242,4 @@ python run.py --suggest-cpe <product>   # find NVD product names
 
 ---
 
-*Specula by Diljot Singh Johal, released under the MIT License. Feed data belongs to its publishers (NIST NVD, CISA, FIRST, MITRE, the Center for Threat-Informed Defense). Check their terms before redistributing it.*
+*Stenwatch by Diljot Singh Johal, released under the MIT License. Feed data belongs to its publishers (NIST NVD, CISA, FIRST, MITRE, the Center for Threat-Informed Defense). Check their terms before redistributing it.*

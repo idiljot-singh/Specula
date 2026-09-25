@@ -1,4 +1,4 @@
-"""Specula console: run the pipeline from a browser and watch each CTI stage work.
+"""Stenwatch console: run the pipeline from a browser and watch each CTI stage work.
 
 python app.py        opens http://127.0.0.1:8765 (local only; stop with Ctrl+C)
 python app.py --pdf  WALKTHROUGH.md -> WALKTHROUGH.pdf (needs pandoc + Edge or Chrome)
@@ -258,7 +258,7 @@ if __name__ == "__main__":
     if "--pdf" in sys.argv:
         raise SystemExit(build_pdf(print))
     server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)  # never 0.0.0.0: this tool maps our weak spots
-    print(f"Specula console: http://127.0.0.1:{PORT}  (Ctrl+C to stop)")
+    print(f"Stenwatch console: http://127.0.0.1:{PORT}  (Ctrl+C to stop)")
     webbrowser.open(f"http://127.0.0.1:{PORT}")
     try:
         server.serve_forever()

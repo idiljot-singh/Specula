@@ -1,6 +1,6 @@
 # Security policy
 
-Specula holds a map of which vulnerable software an organisation runs, so its own security matters.
+Stenwatch holds a map of which vulnerable software an organisation runs, so its own security matters.
 
 ## Reporting a vulnerability
 Please **don't open a public issue**. Report it privately through GitHub:

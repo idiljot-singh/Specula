@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use Specula in research or in your organisation, please cite it."
-title: "Specula: threat-informed CVE prioritisation"
+message: "If you use Stenwatch in research or in your organisation, please cite it."
+title: "Stenwatch: threat-informed CVE prioritisation"
 abstract: >-
   An explainable Cyber Threat Intelligence pipeline that narrows every published CVE to the ones
   that matter to one organisation, using owned assets, third-party suppliers and an adversary

@@ -4,7 +4,7 @@ Replaces hand-maintained assets.csv rows with the live software inventory, and u
 per-device vulnerability list so already-patched CVEs drop out.
 
 One-time setup (tenant admin):
-  1. Entra ID > App registrations > New: "specula"
+  1. Entra ID > App registrations > New: "stenwatch"
   2. API permissions > APIs my organization uses > WindowsDefenderATP > Application:
      Software.Read.All, Vulnerability.Read.All, Machine.Read.All  (read-only) > Grant admin consent
   3. Certificates & secrets > upload a certificate (no client secret). Keep the private key readable

@@ -1,11 +1,11 @@
 """Secrets: Windows Credential Manager (via keyring) first, environment variable as fallback.
 
 Store a secret once, as the account that runs the pipeline:
-    python -c "import keyring; keyring.set_password('specula', 'NVD_API_KEY', input('key: '))"
+    python -c "import keyring; keyring.set_password('stenwatch', 'NVD_API_KEY', input('key: '))"
 """
 import os
 
-SERVICE = "specula"
+SERVICE = "stenwatch"
 
 
 def secret(name):
