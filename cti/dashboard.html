@@ -2,42 +2,56 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Specula · CVE Priorities · __ORG__</title>
 <meta name="author" content="Diljot Singh Johal">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
 <style>
-:root{--bg:#060a11;--bg2:#0a101b;--fg:#e6edf6;--mute:#8d9bb0;--dim:#5d6c83;--card:#0e1624;--line:#1b2638;--line2:#28364d;--accent:#3ee6a8;--blue:#5aa9ff;
-  --act:#ff4d5e;--attend:#ff9f43;--track:#4ea3ff;--ignore:#6b7a90;--amber:#ffc233;--mono:"Cascadia Code","JetBrains Mono",Consolas,monospace}
-@media (prefers-color-scheme:light){:root{--bg:#f3f5f8;--bg2:#e9edf3;--fg:#0d1624;--mute:#56657b;--dim:#8391a6;--card:#fff;--line:#dfe5ee;--line2:#cbd4e1;--accent:#0f9d6c;--blue:#1f6fd1;
-  --act:#d62839;--attend:#d9730d;--track:#1f6fd1}}
+:root{color-scheme:dark;--bg:#04070d;--bg2:#0a101b;--fg:#e6edf6;--mute:#8d9bb0;--dim:#5d6c83;--card:#0e1624;--line:#1b2638;--line2:#28364d;--accent:#3ee6a8;--blue:#5aa9ff;
+  --act:#ff4d5e;--attend:#ff9f43;--track:#4ea3ff;--ignore:#6b7a90;--amber:#ffc233;--display:Orbitron,"Space Grotesk",system-ui,sans-serif;--sans:"Space Grotesk","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono","Cascadia Code",Consolas,monospace}
 @media print{:root{--bg:#fff;--bg2:#f4f6f9;--fg:#000;--mute:#333;--card:#fff;--line:#ccc;--line2:#bbb}}
 *{box-sizing:border-box}
-body{margin:0;color:var(--fg);font:14px/1.5 "Segoe UI Variable Text","Segoe UI",Inter,system-ui,sans-serif;
-  background:radial-gradient(1100px 500px at 90% -10%,rgba(90,169,255,.10),transparent 60%),radial-gradient(800px 400px at -10% 0%,rgba(62,230,168,.07),transparent 60%),var(--bg)}
+html{background:var(--bg)}
+body{margin:0;color:var(--fg);font:14.5px/1.55 var(--sans);min-height:100vh;
+  background:radial-gradient(1100px 520px at 90% -10%,rgba(90,169,255,.14),transparent 60%),radial-gradient(800px 420px at -10% 0%,rgba(62,230,168,.10),transparent 60%),var(--bg)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 70%)}
+body>*{position:relative;z-index:1}
+.orb{display:block}
+.orb-bg{position:fixed;z-index:0;pointer-events:none;width:min(80vmin,780px);height:min(80vmin,780px);left:50%;top:50%;translate:-50% -50%;opacity:.2;mask-image:radial-gradient(circle,#000 50%,transparent 70%)}
+@media (max-width:820px){.orb-bg{opacity:.12}}
+@media print{.orb-bg{display:none}}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.brand svg{width:34px;height:34px;filter:drop-shadow(0 0 10px rgba(62,230,168,.45))}
+.brand strong{font:800 17px var(--display);letter-spacing:.22em;text-transform:uppercase}
 header,main{max-width:1280px;margin:0 auto;padding:18px 20px}
 main{padding-top:0}
 .tlp{display:flex;justify-content:center;gap:10px;padding:6px 16px;background:#000;color:#8d9bb0;font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .tlp b{background:var(--amber);color:#000;padding:1px 8px;border-radius:3px}
-.eyebrow{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
-h1{font-size:26px;letter-spacing:-.02em;margin:6px 0 4px}.sub{color:var(--mute)}
+.eyebrow{font:700 10.5px var(--display);letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:30px;font-weight:700;letter-spacing:-.03em;margin:6px 0 4px}.sub{color:var(--mute)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
-.card{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;transition:.15s}
+.card{position:relative;overflow:hidden;background:rgba(14,22,36,.7);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:16px 18px;cursor:pointer;transition:.2s;font:700 11px var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);box-shadow:0 0 30px -18px var(--c)}
 .card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c);box-shadow:0 0 12px var(--c)}
-.card:hover{border-color:var(--line2)}
-.card b{font:700 28px var(--mono);letter-spacing:-.03em;display:block}.card.off{opacity:.4}
+.card:hover{border-color:color-mix(in srgb,var(--c) 55%,var(--line));transform:translateY(-1px)}
+.card b{font:700 32px var(--mono);letter-spacing:-.03em;display:block;color:var(--fg);margin-bottom:2px}.card.off{opacity:.4}
 .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
 input,select{font:inherit;padding:9px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--bg2);color:var(--fg)}
 input{flex:1;min-width:200px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.wrap{overflow-x:auto;background:rgba(14,22,36,.72);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px}
 table{border-collapse:collapse;width:100%}th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{position:sticky;top:0;background:var(--bg2);cursor:pointer;white-space:nowrap;user-select:none;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 th:hover{color:var(--accent)}
+tbody tr:hover{background:rgba(62,230,168,.04)}
 td.why{color:var(--mute);font-size:12.5px;min-width:320px}
-.pill{display:inline-block;padding:2px 9px;border-radius:999px;color:#fff;font:700 11px var(--mono);letter-spacing:.04em;text-transform:uppercase}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font:700 10px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 50%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);box-shadow:0 0 14px -6px var(--c)}
 a{color:var(--blue);white-space:nowrap;font-family:var(--mono);font-size:13px}
 .foot{color:var(--dim);font-size:12.5px;margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 18px}.foot span:first-child{flex:1}
 .foot a{font-family:inherit;color:var(--mute)}
 </style></head><body>
+<canvas class="orb orb-bg" data-bands="15" data-dots="30" aria-hidden="true"></canvas>
 <div class="tlp"><b>TLP:AMBER</b> limited disclosure · organisation and clients, need-to-know only</div>
-<header><div class="eyebrow">Specula · vulnerability intelligence · __DATE__</div><h1>CVE Priorities: __ORG__</h1>
+<header><div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2.5l15 8.7v17.6L20 37.5 5 28.8V11.2z" fill="none" stroke="#3ee6a8" stroke-width="1.6"/><circle cx="20" cy="20" r="9" fill="none" stroke="#5aa9ff" stroke-width="1.2" opacity=".8"/><circle cx="20" cy="20" r="3.2" fill="#3ee6a8"/><path d="M20 7v6M20 27v6M7 20h6M27 20h6" stroke="#3ee6a8" stroke-width="1.4" stroke-linecap="round"/></svg><strong>Specula</strong></div><div class="eyebrow">Specula · vulnerability intelligence · __DATE__</div><h1>CVE Priorities: __ORG__</h1>
 <div class="sub">Click a tier card to show or hide it. Click a column heading to sort.</div>
 <div class="cards" id="cards"></div>
 <div class="controls"><input id="q" placeholder="Search CVE, asset, threat group, reason…" aria-label="Search">
@@ -81,7 +95,7 @@ function render() {
   // textContent everywhere: feed data (CVE text, asset names) is never parsed as HTML
   rows.slice(0, 1000).forEach(r => {
     const pill = el("span", {className: "pill", textContent: r.tier});
-    pill.style.background = `var(${COLOR[r.tier]})`;
+    pill.style.setProperty("--c", `var(${COLOR[r.tier]})`);
     const link = el("a", {href: "https://nvd.nist.gov/vuln/detail/" + encodeURIComponent(r.cve), textContent: r.cve, target: "_blank", rel: "noopener"});
     body.append(el("tr", {}, [el("td", {}, [pill]), el("td", {textContent: r.risk}), el("td", {}, [link]),
       el("td", {textContent: r.asset}), el("td", {textContent: r.source}), el("td", {textContent: r.kev ? "yes" : ""}),
@@ -92,4 +106,43 @@ function render() {
     `${rows.length} findings shown` + (rows.length > 1000 ? " (first 1000 rendered; refine the search)" : "");
 }
 render();
+
+// thinking orb: a dotted sphere whose latitude bands scramble, then click back into place
+// ponytail: copied in cti/app.html, cti/dashboard.html and docs/index.html (three standalone pages); keep them in sync
+const ORB = {bands: 9, dots: 18, cycle: 2800, colors: ["#dfe8f3"]};
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+const snap = t => 1 + 2.7 * (t - 1) ** 3 + 1.7 * (t - 1) ** 2;  // overshoots slightly: the "click"
+function orbFrame(now) {
+  document.querySelectorAll("canvas.orb").forEach(c => {
+    const px = Math.round(c.clientWidth * devicePixelRatio);
+    if (!px) return;
+    if (c.width !== px) c.width = c.height = px;
+    const g = c.getContext("2d"), calm = c.classList.contains("calm"), t = still ? 0 : now;
+    const bands = +c.dataset.bands || ORB.bands, per = +c.dataset.dots || ORB.dots;
+    if (!c.plan || t - c.plan.at > ORB.cycle) c.plan = {at: t, offs: Array.from({length: bands}, () => (Math.random() - .5) * 2.4)};
+    const k = (t - c.plan.at) / ORB.cycle;  // scramble, hold, solve with a click, rest solved
+    const amt = calm || still ? 0 : k < .4 ? ease(k / .4) : k < .55 ? 1 : k < .75 ? 1 - snap((k - .55) / .2) : 0;
+    const spin = t / (calm ? 5200 : 2200), tilt = -.15, r = px * .4, mid = px / 2, dots = [];
+    for (let b = 0; b < bands; b++) {
+      const lat = -Math.PI / 2 + Math.PI * (b + .5) / bands;
+      for (let d = 0; d < per; d++) {
+        const lon = d * 2 * Math.PI / per + spin + c.plan.offs[b] * amt;
+        const x = Math.cos(lat) * Math.sin(lon), y = Math.sin(lat), z = Math.cos(lat) * Math.cos(lon);
+        dots.push([x, y * Math.cos(tilt) - z * Math.sin(tilt), y * Math.sin(tilt) + z * Math.cos(tilt), b * ORB.colors.length / bands | 0, Math.cos(lat)]);
+      }
+    }
+    const dot = px * .02 * (162 / (bands * per)) ** .5;  // same look at any density
+    g.clearRect(0, 0, px, px);
+    dots.sort((a, b) => a[2] - b[2]).forEach(([x, y, z, ci, w]) => {
+      const depth = (z + 1) / 2;
+      g.globalAlpha = (calm ? .45 : .2) + (calm ? .4 : .8) * depth;
+      g.fillStyle = g.shadowColor = ORB.colors[ci];
+      g.shadowBlur = depth > .6 ? dot * 1.5 : 0;
+      g.beginPath(); g.arc(mid + x * r, mid + y * r, dot * (.6 + .9 * depth) * (.35 + .65 * w), 0, 7); g.fill();
+    });
+  });
+  requestAnimationFrame(orbFrame);
+}
+requestAnimationFrame(orbFrame);
 </script></body></html>

@@ -3,19 +3,16 @@
 <meta name="author" content="Diljot Singh Johal">
 <title>Specula · CVE Intelligence Console</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v14l-12 7-12-7V9z' fill='%230a1220' stroke='%233ee6a8' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%233ee6a8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
 <style>
-:root{
+:root{color-scheme:dark;
   --bg:#060a11;--bg2:#0a101b;--card:#0e1624;--card2:#121c2d;--line:#1b2638;--line2:#28364d;
   --fg:#e6edf6;--mute:#8d9bb0;--dim:#5d6c83;--accent:#3ee6a8;--accent-ink:#04110b;--blue:#5aa9ff;--amber:#ffc233;
   --act:#ff4d5e;--attend:#ff9f43;--track:#4ea3ff;--ignore:#6b7a90;--ok:#3ee6a8;
   --glow:0 0 0 1px rgba(62,230,168,.25),0 8px 30px -8px rgba(62,230,168,.25);
-  --sans:"Segoe UI Variable Text","Segoe UI",Inter,system-ui,sans-serif;--mono:"Cascadia Code","JetBrains Mono",Consolas,monospace;
+  --display:Orbitron,"Space Grotesk",system-ui,sans-serif;--sans:"Space Grotesk","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono","Cascadia Code",Consolas,monospace;
 }
-@media (prefers-color-scheme:light){:root{
-  --bg:#f3f5f8;--bg2:#e9edf3;--card:#fff;--card2:#f6f8fb;--line:#dfe5ee;--line2:#cbd4e1;
-  --fg:#0d1624;--mute:#56657b;--dim:#8391a6;--accent:#0f9d6c;--accent-ink:#fff;--blue:#1f6fd1;
-  --act:#d62839;--attend:#d9730d;--track:#1f6fd1;--ignore:#6b7a90;--ok:#0f9d6c;
-  --glow:0 0 0 1px rgba(15,157,108,.25),0 8px 24px -10px rgba(15,157,108,.35)}}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;color:var(--fg);font:14.5px/1.55 var(--sans);min-height:100vh;
@@ -31,42 +28,48 @@ a{color:var(--blue)}
 .tlp{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 16px;font:600 11.5px/1.4 var(--mono);letter-spacing:.08em;
   text-transform:uppercase;color:var(--mute);background:#000;border-bottom:1px solid var(--line)}
 .tlp b{color:#000;background:var(--amber);padding:1px 8px;border-radius:3px}
-@media (prefers-color-scheme:light){.tlp{background:#0d1624;color:#c9d3e0}}
 
 .top{max-width:1240px;margin:0 auto;padding:18px 20px 6px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
 .brand svg{width:38px;height:38px;filter:drop-shadow(0 0 10px rgba(62,230,168,.35))}
-.brand small{display:block;font:600 10.5px var(--mono);letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
-.brand strong{font-size:21px;letter-spacing:.02em}
+.brand small{display:block;font:700 9.5px var(--display);letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+.brand strong{font:800 19px var(--display);letter-spacing:.22em;text-transform:uppercase}
 .org{font-size:12.5px;color:var(--mute);border:1px solid var(--line);background:var(--card);padding:4px 10px;border-radius:999px}
 .help{text-decoration:none;color:var(--fg)}.help:hover{border-color:var(--accent)}
 #status{margin-left:auto;display:flex;align-items:center;gap:8px;font:600 12px var(--mono);letter-spacing:.04em;color:var(--mute);
   border:1px solid var(--line);background:var(--card);padding:5px 12px;border-radius:999px}
-#status i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
 #status.busy{color:var(--attend);border-color:rgba(255,159,67,.4)}
-#status.busy i{background:var(--attend);box-shadow:0 0 10px var(--attend);animation:pulse 1s infinite}
+#status .orb{--s:18px}
 @keyframes pulse{50%{opacity:.25}}
 
-.layout{max-width:1240px;margin:0 auto;padding:14px 20px 24px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px}
-nav ol{list-style:none;margin:0;padding:0;position:sticky;top:14px}
-nav li{position:relative}
-nav li:not(:last-child)::after{content:"";position:absolute;left:23px;top:44px;bottom:-6px;width:1px;background:var(--line2)}
-nav button{width:100%;display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:center;text-align:left;font:inherit;color:var(--mute);
-  background:none;border:1px solid transparent;border-radius:12px;padding:8px 8px;cursor:pointer;margin-bottom:6px;transition:.15s}
-nav button .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 11.5px var(--mono);
-  border:1px solid var(--line2);background:var(--bg2);color:var(--mute);transition:.15s}
-nav button b{display:block;color:var(--fg);font-weight:600;font-size:14px}
-nav button small{display:block;font:11.5px var(--mono);color:var(--dim)}
-nav button:hover{background:var(--card)}
-nav button[aria-current=step]{background:var(--card);border-color:var(--line)}
-nav button[aria-current=step] .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 0 14px rgba(62,230,168,.5)}
+.layout{max-width:1240px;margin:0 auto;padding:14px 20px 24px;display:grid;grid-template-columns:290px minmax(0,1fr);gap:22px}
+nav{position:sticky;top:14px;align-self:start;padding:10px 0 8px}
+nav ol{list-style:none;margin:0;padding:6px 0 2px;position:relative}
+/* the funnel: each step is narrower than the one before; the backdrop tapers to the same 70% */
+nav::before{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(0 0,100% 0,85% 100%,15% 100%);
+  background:linear-gradient(180deg,rgba(90,169,255,.13),rgba(255,159,67,.08) 60%,rgba(255,77,94,.14))}
+nav ol::after{content:"";position:absolute;left:50%;top:26px;bottom:22px;width:1px;z-index:-1;background:linear-gradient(var(--blue),var(--act));opacity:.35}
+nav .end{display:block;text-align:center;padding:2px 0;font:700 9.5px var(--display);letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+nav .end.bot{color:var(--act)}
+nav li{width:calc(100% - var(--i) * 5%);margin:0 auto}
+nav button{width:100%;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;font:inherit;color:var(--mute);
+  background:rgba(6,10,17,.72);border:1px solid var(--line);border-radius:12px;padding:8px 10px 8px 8px;cursor:pointer;margin-bottom:6px;transition:.15s;backdrop-filter:blur(6px)}
+nav button .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 11px var(--mono);
+  border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:var(--bg2);color:var(--c);transition:.15s}
+nav button b{display:block;color:var(--fg);font-weight:600;font-size:14px;line-height:1.25}
+nav button small{display:block;font:11px var(--mono);color:var(--dim);line-height:1.35}
+nav button .k{font:700 12px var(--mono);color:var(--c);text-align:right;white-space:nowrap}
+nav button .k small{font:500 9.5px var(--mono);color:var(--dim);letter-spacing:.04em}
+nav button:hover{border-color:color-mix(in srgb,var(--c) 50%,var(--line))}
+nav button[aria-current=step]{background:color-mix(in srgb,var(--c) 10%,var(--card));border-color:var(--c);box-shadow:0 0 22px -8px var(--c)}
+nav button[aria-current=step] .n{background:var(--c);border-color:var(--c);color:var(--accent-ink);box-shadow:0 0 14px var(--c)}
 
 main{min-width:0}
-.panel{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;padding:26px 28px;
-  box-shadow:0 20px 60px -30px rgba(0,0,0,.6)}
-.eyebrow{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.panel{--c:var(--accent);background:linear-gradient(180deg,rgba(18,28,45,.62),rgba(14,22,36,.62));backdrop-filter:blur(2px);border:1px solid var(--line);border-top:2px solid var(--c);border-radius:18px;padding:26px 28px;
+  box-shadow:0 -12px 40px -24px var(--c),0 20px 60px -30px rgba(0,0,0,.6)}
+.eyebrow{font:700 10.5px var(--display);letter-spacing:.24em;text-transform:uppercase;color:var(--c,var(--accent))}
 .eyebrow span{color:var(--dim)}
-.panel h2{margin:6px 0 6px;font-size:26px;line-height:1.2;letter-spacing:-.02em}
+.panel h2{margin:6px 0 6px;font-size:28px;font-weight:700;line-height:1.15;letter-spacing:-.03em}
 .lede{font-size:15.5px;color:var(--mute);max-width:72ch;margin:0 0 14px}
 .panel h3{font:600 11.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:26px 0 10px;display:flex;align-items:center;gap:10px}
 .panel h3::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -99,7 +102,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
 input,textarea{font:inherit;padding:9px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--bg);color:var(--fg)}
 input{min-width:220px}input[type=date]{min-width:0;color-scheme:dark}
-@media (prefers-color-scheme:light){input[type=date]{color-scheme:light}}
 textarea{width:100%;min-height:210px;font:12.5px/1.55 var(--mono);white-space:pre;overflow-x:auto;tab-size:4}
 details{border:1px solid var(--line);background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
 summary{cursor:pointer;font-weight:600}summary .mono{margin-left:4px}
@@ -149,6 +151,21 @@ ul.tiers li{display:grid;grid-template-columns:86px 1fr;gap:10px;align-items:cen
 #log{margin:0;padding:14px 16px;min-height:74px;max-height:300px;overflow:auto;font:12.5px/1.6 var(--mono);color:#c5d0de;white-space:pre-wrap;word-break:break-word}
 #log .cmd{color:#3ee6a8}#log .err{color:#ff6b78}#log .hint{color:#5d6c83}
 #log.running::after{content:"▋";color:#3ee6a8;animation:pulse 1s steps(1) infinite}
+/* thinking orb: one component for everything that is processing */
+.orb{--s:18px;display:inline-block;flex:none;width:var(--s);height:var(--s)}
+.orb-bg{position:fixed;z-index:0;pointer-events:none;width:min(80vmin,780px);height:min(80vmin,780px);left:50%;top:50%;translate:-50% -50%;opacity:.32;mask-image:radial-gradient(circle,#000 50%,transparent 70%)}
+@media (max-width:820px){.orb-bg{opacity:.12}}
+@media print{.orb-bg{display:none}}
+.shimmer{background:linear-gradient(90deg,#8d9bb0 0%,#eaf1fa 45%,#8d9bb0 90%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;
+  color:transparent;animation:shimmer 2.2s linear infinite}
+@keyframes shimmer{from{background-position:120% 0}to{background-position:-80% 0}}
+#think{display:none;align-items:center;gap:16px;padding:16px 18px;border-bottom:1px solid #1b2638;
+  background:radial-gradient(400px 90px at 40px 50%,rgba(62,230,168,.10),transparent 70%)}
+#console.running #think{display:flex}
+#think .orb{--s:44px}
+#think b{display:block;font:700 10.5px var(--display);letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+#think span{display:block;font:13px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70ch}
+.msg .orb{--s:20px;vertical-align:-5px;margin-right:10px}
 
 footer{max-width:1240px;margin:0 auto;padding:10px 20px 34px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;color:var(--dim);font-size:12.5px}
 footer a{color:var(--mute);text-decoration:none;border-bottom:1px dotted var(--line2)}footer a:hover{color:var(--accent)}
@@ -160,12 +177,13 @@ footer .sp{flex:1}
 @media (max-width:820px){
   .layout{grid-template-columns:minmax(0,1fr);gap:14px}nav{min-width:0}
   nav ol{display:flex;overflow-x:auto;gap:6px;position:static;padding-bottom:4px}
-  nav li::after{display:none}nav button{grid-template-columns:28px auto;white-space:nowrap;margin:0}nav button small{display:none}
+  nav{position:static}nav li{width:auto;margin:0}nav ol{padding:0 0 4px}nav::before,nav ol::after,nav .end{display:none}nav button{grid-template-columns:28px auto auto;white-space:nowrap;margin:0}nav button small{display:none}
   .panel{padding:18px 16px}.panel h2{font-size:22px}.fl{grid-template-columns:minmax(0,1fr) 110px}.fl .num{font-size:18px}
   .top{padding:14px 16px 4px}.layout,footer{padding-left:16px;padding-right:16px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
+<canvas class="orb orb-bg" data-bands="15" data-dots="30" aria-hidden="true"></canvas>
 <div class="tlp"><b>TLP:AMBER</b> limited disclosure · organisation and clients, need-to-know only</div>
 <header class="top">
   <a class="brand" href="#0" aria-label="Start here">
@@ -175,7 +193,7 @@ footer .sp{flex:1}
     <span><small>Threat-informed CVE prioritisation</small><strong>Specula</strong></span>
   </a>
   <span class="org" id="org"></span>
-  <span id="status" role="status"><i></i><span>idle</span></span>
+  <span id="status" role="status"><canvas class="orb calm" aria-hidden="true"></canvas><span>idle</span></span>
   <a class="org help" href="#help">? Help</a>
 </header>
 <div class="layout">
@@ -184,6 +202,7 @@ footer .sp{flex:1}
     <section class="panel" id="panel" aria-live="polite"></section>
     <section id="console" aria-label="Background job output">
       <div class="bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><b>behind the scenes</b><span id="jobname">no job run yet</span><span id="jobstate"></span></div>
+      <div id="think" aria-hidden="true"><canvas class="orb"></canvas><div><b>Processing</b><span class="shimmer" id="thinktext">Starting…</span></div></div>
       <pre id="log"><span class="hint">Every button runs the real pipeline code in the background. Its output streams here, live.</span></pre>
     </section>
   </main>
@@ -263,6 +282,8 @@ async function poll() {
   const j = await api(`/api/job?from=${seen}`);
   const log = document.getElementById("log");
   j.lines.forEach(logLine);
+  const last = j.lines.filter(l => l.trim()).pop();
+  if (last) document.getElementById("thinktext").textContent = last.trim().slice(0, 140);
   if (j.lines.length) log.scrollTop = log.scrollHeight;
   seen = j.total;
   if (!j.running) {
@@ -279,6 +300,9 @@ function busy(on) {
   s.lastChild.textContent = on ? "working in the background" : "idle";
   s.classList.toggle("busy", on);
   document.getElementById("log").classList.toggle("running", on);
+  document.getElementById("console").classList.toggle("running", on);
+  s.querySelector(".orb").classList.toggle("calm", !on);
+  if (on) document.getElementById("thinktext").textContent = "Starting…";
   if (on) { document.getElementById("jobstate").textContent = "running"; document.getElementById("jobstate").style.color = ""; }
   document.querySelectorAll("[data-action]").forEach(b => b.disabled = on);
 }
@@ -334,7 +358,7 @@ function funnel() {
 }
 
 const STEPS = [
-  {title: "Start here", stage: "Overview", file: "mission brief", render(P) {
+  {title: "Start here", stage: "Overview", sub: "what Specula does", c: "--accent", k: () => null, render(P) {
     const r = lastRun();
     P.append(
       el("p", {className: "lede", textContent: "About 40,000 CVEs are published every year, and the usual severity scores can't tell an organisation which ones will actually be used against it. This console narrows every CVE in the world down to the few that matter to one organisation, and shows the reason for every decision."}),
@@ -343,12 +367,12 @@ const STEPS = [
       p("Each step on the left is one stage of the Cyber Threat Intelligence (CTI) lifecycle: Direction, Collection, Processing, Analysis, Dissemination and Feedback. Each one explains what it does, shows its live data, and has a button that runs the real code. The terminal below shows everything the code prints while it works."),
       el("div", {className: "stats"}, [
         stat("CVEs in the local database", fmt(S.db.cve), S.db.nvd_sync ? `full NVD sync ${S.db.nvd_sync.slice(0, 10)}` : "no full sync yet"),
-        stat("Last pipeline run", r.when ? r.when.slice(0, 10) : "never", r.when ? r.when.slice(11, 16) + " UTC" : "run step 4", "--accent")]),
+        stat("Last pipeline run", r.when ? r.when.slice(0, 10) : "never", r.when ? r.when.slice(11, 16) + " UTC" : "run step 4, Rank the risk", "--accent")]),
       h3("First try"),
       p("Run the offline test suite. It checks every stage's logic on fixed sample data, needs no network, and takes a few seconds."),
       el("div", {className: "row"}, [action("▶  Run the offline tests", "test")]));
   }},
-  {title: "Direction", stage: "Stage 01", file: "profile.yaml", render(P) {
+  {title: "Who we are", stage: "Step 1 · Direction", sub: "our organisation and attackers", c: "--blue", k: () => [Object.keys(S.profile.threat_groups).length, "groups"], render(P) {
     const pr = S.profile, o = pr.organisation;
     P.append(
       el("p", {className: "lede", textContent: "Intelligence starts with a direction: who we are, what we need to know, and who is likely to come after us. A person writes this once and reviews it every quarter. Every number the pipeline later uses to decide is in this one file."}),
@@ -359,9 +383,9 @@ const STEPS = [
       el("div", {className: "chips"}, Object.entries(pr.threat_groups).map(([id, n]) =>
         el("a", {className: "chip", href: `https://attack.mitre.org/groups/${encodeURIComponent(id)}/`, target: "_blank", rel: "noopener"}, [el("code", {textContent: id}), n]))),
       h3("Tune it"),
-      editor("profile.yaml", "Change a weight or add a group, save, then open Analysis and press Re-rank to see how the ranking moves."));
+      editor("profile.yaml", "Change a weight or add a group, save, then open Rank the risk and press Re-rank to see how the ranking moves."));
   }},
-  {title: "Collection", stage: "Stage 02", file: "cti/collect.py", render(P) {
+  {title: "Gather the feeds", stage: "Step 2 · Collection", sub: "download public threat data", c: "--track", k: () => [S.db.cve, "CVEs"], render(P) {
     const d = S.db;
     const def = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
     const since = el("input", {type: "date", value: def, ariaLabel: "Sync CVEs changed since"});
@@ -377,12 +401,12 @@ const STEPS = [
       p("Quick sync pulls only the CVEs NVD changed since a date, which takes a minute or two. Full sync downloads all of NVD the first time (about 15 minutes without an API key) and only the changes after that. Both also refresh KEV, EPSS, ATT&CK and CTID."),
       el("div", {className: "row"}, [since, action("⟳  Quick sync since this date", "since", () => since.value), action("Full sync", "full", "", "ghost")]));
   }},
-  {title: "Processing", stage: "Stage 03", file: "cti/process.py", render(P) {
+  {title: "Match our systems", stage: "Step 3 · Processing", sub: "which flaws touch us", c: "--amber", k: () => [+lastRun().findings || 0, "match"], render(P) {
     const term = el("input", {placeholder: "e.g. fortios, exchange, moveit", ariaLabel: "Product name"});
     const hits = el("div");
     const find = el("button", {className: "ghost", textContent: "⌕  Find product name", type: "button"});
     find.onclick = async () => {
-      hits.replaceChildren(el("span", {className: "msg", textContent: "Searching 400,000 CVEs…"}));
+      hits.replaceChildren(el("span", {className: "msg"}, [el("canvas", {className: "orb", ariaHidden: "true"}), el("span", {className: "shimmer", textContent: "Searching every CVE for that product…"})]));
       try {
         const r = await api(`/api/cpe?term=${encodeURIComponent(term.value)}`);
         hits.replaceChildren(r.hits.length ? el("div", {className: "chips"}, r.hits.map(([cpe, n]) => el("span", {className: "chip"}, [el("code", {textContent: fmt(n)}), cpe])))
@@ -399,7 +423,7 @@ const STEPS = [
       editor("assets.csv", "Columns: name, cpe, version, criticality (1-3), internet_facing (y/n)."),
       editor("third_parties.csv", "Columns: name, cpe, version (often blank), type, data_access (none/internal/confidential), privileged (y/n), internet_facing (y/n)."));
   }},
-  {title: "Analysis", stage: "Stage 04", file: "cti/analyse.py", render(P) {
+  {title: "Rank the risk", stage: "Step 4 · Analysis", sub: "score and decide", c: "--attend", k: () => [(S.tiers.Act || 0) + (S.tiers.Attend || 0), "exploited"], render(P) {
     const w = S.profile.weights, x = S.profile.exposure, t = S.profile.tiers;
     const f = el("div", {className: "formula"});
     [["likelihood", ` = ${w.epss}`, "·EPSS + ", `${w.kev}`, "·inKEV + ", `${w.ransomware}`, "·ransomware + ", `${w.threat_profile}`, "·threat_overlap\n"],
@@ -421,7 +445,7 @@ const STEPS = [
       h3("Top 10 right now"),
       S.top.length ? topTable(S.top) : p("No report yet: press Re-rank."));
   }},
-  {title: "Dissemination", stage: "Stage 05", file: "cti/disseminate.py", render(P) {
+  {title: "Share the results", stage: "Step 5 · Dissemination", sub: "reports for every reader", c: "--act", k: () => [S.tiers.Act || 0, "act now"], render(P) {
     const kinds = [["dashboard.html", "HTML", "Analyst dashboard", "Search, filter and sort every finding"],
       ["report.md", "MD", "Intelligence report", "Decision summary, threat hits, ATT&CK view"],
       ["brief.md", "BRIEF", "Management brief", "One page, written for non-technical readers"],
@@ -433,9 +457,9 @@ const STEPS = [
       el("p", {className: "lede", textContent: "The same ranking goes out in five forms for five audiences, from analysts to management to other intelligence platforms. Everything is marked TLP:AMBER."}),
       el("div", {className: "stats"}, TIERS.map(t => stat(t, fmt(S.tiers[t] || 0), {Act: "within 48 h", Attend: "next patch cycle", Track: "watch", Ignore: "no action"}[t], COLOR[t]))),
       h3("Products"),
-      cards.length ? el("div", {className: "outputs"}, cards) : p("No outputs yet: run Analysis."));
+      cards.length ? el("div", {className: "outputs"}, cards) : p("No outputs yet: run step 4, Rank the risk."));
   }},
-  {title: "Feedback", stage: "Stage 06", file: "exceptions.csv", render(P) {
+  {title: "Record decisions", stage: "Step 6 · Feedback", sub: "patched, fixed or accepted", c: "--accent", k: () => [+lastRun().suppressed || 0, "closed"], render(P) {
     const r = lastRun();
     P.append(
       el("p", {className: "lede", textContent: "Analysts close the loop. A CVE that is patched, mitigated, accepted, a false positive, or confirmed not affected is recorded here and drops out of the next ranking. Exceptions can expire, and when one does, the finding comes back for review, so nothing is silenced forever."}),
@@ -447,7 +471,7 @@ const STEPS = [
   }},
 ];
 
-const HELP = {title: "Help", stage: "Support", file: "WALKTHROUGH.pdf", render(P) {
+const HELP = {title: "Help", stage: "Support", sub: "full written walkthrough", c: "--accent", render(P) {
     P.append(
       el("p", {className: "lede", textContent: "The full written walkthrough as a printable PDF: what was built in each phase, why, and the verified results. It is rebuilt from WALKTHROUGH.md, so it always matches the latest text."}),
       el("div", {className: "row"}, [action("⤓  Build the PDF", "pdf"),
@@ -459,7 +483,8 @@ function show(i) {
   history.replaceState(null, "", "#" + i);
   document.querySelectorAll("#steps button").forEach((b, j) => b.setAttribute("aria-current", j === i ? "step" : "false"));
   const P = document.getElementById("panel"), s = STEPS[i] || HELP;
-  P.replaceChildren(el("div", {className: "eyebrow"}, [s.stage + " ", el("span", {textContent: "· " + s.file})]), el("h2", {textContent: s.title}));
+  P.style.setProperty("--c", `var(${s.c})`);
+  P.replaceChildren(el("div", {className: "eyebrow"}, [s.stage + " ", el("span", {textContent: "· " + s.sub})]), el("h2", {textContent: s.title}));
   s.render(P);
   if (s === HELP) return;
   const prev = i ? el("button", {className: "ghost", textContent: "← " + STEPS[i - 1].title, type: "button", onclick: () => show(i - 1)}) : el("span");
@@ -471,12 +496,57 @@ async function refresh() {
   S = await api("/api/state");
   document.getElementById("org").textContent = `${S.profile.organisation.name} · ${S.profile.organisation.country}`;
   const ol = document.getElementById("steps");
-  if (!ol.children.length)
-    STEPS.forEach((s, i) => ol.append(el("li", {}, [el("button", {type: "button", onclick: () => show(i)},
-      [el("span", {className: "n", textContent: String(i).padStart(2, "0")}), el("span", {}, [el("b", {textContent: s.title}), el("small", {textContent: s.file})])])])));
+  if (!ol.children.length) {
+    ol.before(el("span", {className: "end top", textContent: "Broad"}));
+    ol.after(el("span", {className: "end bot", textContent: "Precise"}));
+    STEPS.forEach((s, i) => { const li = el("li", {}, [colored(el("button", {type: "button", onclick: () => show(i)},
+      [el("span", {className: "n", textContent: String(i).padStart(2, "0")}), el("span", {}, [el("b", {textContent: s.title}), el("small", {textContent: s.sub})]), el("span", {className: "k"})]), s.c)]);
+      li.style.setProperty("--i", i); ol.append(li); });
+  }
+  STEPS.forEach((s, i) => { const k = s.k(), box = ol.children[i].querySelector(".k");
+    box.replaceChildren(...(k ? [fmt(k[0]), el("small", {textContent: k[1]})] : [])); });
   show(current);
 }
 window.onhashchange = () => { const i = location.hash === "#help" ? "help" : parseInt(location.hash.slice(1)); if ((i === "help" || i >= 0 && i < STEPS.length) && i !== current) show(i); };
+
+// thinking orb: a dotted sphere whose latitude bands scramble, then click back into place
+// ponytail: copied in cti/app.html, cti/dashboard.html and docs/index.html (three standalone pages); keep them in sync
+const ORB = {bands: 9, dots: 18, cycle: 2800, colors: ["#dfe8f3"]};
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+const snap = t => 1 + 2.7 * (t - 1) ** 3 + 1.7 * (t - 1) ** 2;  // overshoots slightly: the "click"
+function orbFrame(now) {
+  document.querySelectorAll("canvas.orb").forEach(c => {
+    const px = Math.round(c.clientWidth * devicePixelRatio);
+    if (!px) return;
+    if (c.width !== px) c.width = c.height = px;
+    const g = c.getContext("2d"), calm = c.classList.contains("calm"), t = still ? 0 : now;
+    const bands = +c.dataset.bands || ORB.bands, per = +c.dataset.dots || ORB.dots;
+    if (!c.plan || t - c.plan.at > ORB.cycle) c.plan = {at: t, offs: Array.from({length: bands}, () => (Math.random() - .5) * 2.4)};
+    const k = (t - c.plan.at) / ORB.cycle;  // scramble, hold, solve with a click, rest solved
+    const amt = calm || still ? 0 : k < .4 ? ease(k / .4) : k < .55 ? 1 : k < .75 ? 1 - snap((k - .55) / .2) : 0;
+    const spin = t / (calm ? 5200 : 2200), tilt = -.15, r = px * .4, mid = px / 2, dots = [];
+    for (let b = 0; b < bands; b++) {
+      const lat = -Math.PI / 2 + Math.PI * (b + .5) / bands;
+      for (let d = 0; d < per; d++) {
+        const lon = d * 2 * Math.PI / per + spin + c.plan.offs[b] * amt;
+        const x = Math.cos(lat) * Math.sin(lon), y = Math.sin(lat), z = Math.cos(lat) * Math.cos(lon);
+        dots.push([x, y * Math.cos(tilt) - z * Math.sin(tilt), y * Math.sin(tilt) + z * Math.cos(tilt), b * ORB.colors.length / bands | 0, Math.cos(lat)]);
+      }
+    }
+    const dot = px * .02 * (162 / (bands * per)) ** .5;  // same look at any density
+    g.clearRect(0, 0, px, px);
+    dots.sort((a, b) => a[2] - b[2]).forEach(([x, y, z, ci, w]) => {
+      const depth = (z + 1) / 2;
+      g.globalAlpha = (calm ? .45 : .2) + (calm ? .4 : .8) * depth;
+      g.fillStyle = g.shadowColor = ORB.colors[ci];
+      g.shadowBlur = depth > .6 ? dot * 1.5 : 0;
+      g.beginPath(); g.arc(mid + x * r, mid + y * r, dot * (.6 + .9 * depth) * (.35 + .65 * w), 0, 7); g.fill();
+    });
+  });
+  requestAnimationFrame(orbFrame);
+}
+requestAnimationFrame(orbFrame);
 
 refresh().then(async () => {  // a job started before a page reload keeps streaming
   const j = await api("/api/job?from=0");
