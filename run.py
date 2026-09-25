@@ -2,6 +2,7 @@
 
 python run.py                        collect feeds, match assets.csv (+ third_parties.csv), write out/
 python run.py --skip-collect         reuse cve.db as-is (fast, for trying out assets.csv or profile.yaml changes)
+python run.py --example              run the bundled Example Organisation (*.example.* files) into out/example/
 python run.py --since 2026-09-01     only pull CVEs modified since that date (quick test)
 python run.py --suggest-cpe exchange which NVD product names match 'exchange'? (fills the cpe column)
 """
@@ -77,7 +78,11 @@ p = argparse.ArgumentParser()
 p.add_argument("--since", help="only pull CVEs modified since this date (skip the full NVD backfill)")
 p.add_argument("--skip-collect", action="store_true")
 p.add_argument("--suggest-cpe", metavar="TERM")
+p.add_argument("--example", action="store_true")
 args = p.parse_args()
+if args.example:
+    ASSETS, THIRD, PROFILE, EXCEPTIONS = (f.with_name(f.name.replace(".", ".example.", 1)) for f in (ASSETS, THIRD, PROFILE, EXCEPTIONS))
+    OUT = OUT / "example"
 
 if args.suggest_cpe:
     for prefix, n in process.suggest_cpe(collect.connect(DB), args.suggest_cpe):

@@ -42,6 +42,7 @@ The result is a ranked, explainable list in four SSVC decision tiers: **Act** (w
 ```bash
 pip install --require-hashes -r requirements.txt
 python test_pipeline.py                         # offline self-check: prints "ok"
+python run.py --example --since 2026-01-01      # try it on the bundled Example Organisation -> out/example/
 
 copy profile.example.yaml profile.yaml          # your organisation and threat profile
 copy assets.example.csv assets.csv              # the software you run
