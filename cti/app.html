@@ -39,6 +39,7 @@ a{color:var(--blue)}
 .brand small{display:block;font:600 10.5px var(--mono);letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
 .brand strong{font-size:21px;letter-spacing:.02em}
 .org{font-size:12.5px;color:var(--mute);border:1px solid var(--line);background:var(--card);padding:4px 10px;border-radius:999px}
+.help{text-decoration:none;color:var(--fg)}.help:hover{border-color:var(--accent)}
 #status{margin-left:auto;display:flex;align-items:center;gap:8px;font:600 12px var(--mono);letter-spacing:.04em;color:var(--mute);
   border:1px solid var(--line);background:var(--card);padding:5px 12px;border-radius:999px}
 #status i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
@@ -175,6 +176,7 @@ footer .sp{flex:1}
   </a>
   <span class="org" id="org"></span>
   <span id="status" role="status"><i></i><span>idle</span></span>
+  <a class="org help" href="#help">? Help</a>
 </header>
 <div class="layout">
   <nav aria-label="Walkthrough steps"><ol id="steps"></ol></nav>
@@ -197,7 +199,7 @@ footer .sp{flex:1}
 const TOKEN = "__TOKEN__";
 const TIERS = ["Act", "Attend", "Track", "Ignore"];
 const COLOR = {Act: "--act", Attend: "--attend", Track: "--track", Ignore: "--ignore"};
-let S = null, current = Math.min(7, Math.max(0, parseInt(location.hash.slice(1)) || 0)), polling = null, seen = 0;
+let S = null, current = location.hash === "#help" ? "help" : Math.min(6, Math.max(0, parseInt(location.hash.slice(1)) || 0)), polling = null, seen = 0;
 
 // textContent everywhere: CVE descriptions and file contents are never parsed as HTML
 const el = (tag, props = {}, kids = []) => { const e = document.createElement(tag); Object.assign(e, props); e.append(...kids); return e; };
@@ -443,21 +445,23 @@ const STEPS = [
       h3("Audit trail · run.log"),
       el("div", {className: "formula", textContent: S.log.join("\n") || "No runs yet."}));
   }},
-  {title: "Walkthrough", stage: "Docs", file: "WALKTHROUGH.pdf", render(P) {
+];
+
+const HELP = {title: "Help", stage: "Support", file: "WALKTHROUGH.pdf", render(P) {
     P.append(
       el("p", {className: "lede", textContent: "The full written walkthrough as a printable PDF: what was built in each phase, why, and the verified results. It is rebuilt from WALKTHROUGH.md, so it always matches the latest text."}),
       el("div", {className: "row"}, [action("⤓  Build the PDF", "pdf"),
         S.pdf ? el("a", {className: "ghost", href: out("WALKTHROUGH.pdf").replace("/out/", "/"), target: "_blank", rel: "noopener", textContent: "Open WALKTHROUGH.pdf ↗"}) : ""]));
-  }},
-];
+}};
 
 function show(i) {
   current = i;
   history.replaceState(null, "", "#" + i);
   document.querySelectorAll("#steps button").forEach((b, j) => b.setAttribute("aria-current", j === i ? "step" : "false"));
-  const P = document.getElementById("panel"), s = STEPS[i];
+  const P = document.getElementById("panel"), s = STEPS[i] || HELP;
   P.replaceChildren(el("div", {className: "eyebrow"}, [s.stage + " ", el("span", {textContent: "· " + s.file})]), el("h2", {textContent: s.title}));
   s.render(P);
+  if (s === HELP) return;
   const prev = i ? el("button", {className: "ghost", textContent: "← " + STEPS[i - 1].title, type: "button", onclick: () => show(i - 1)}) : el("span");
   const next = i < STEPS.length - 1 ? el("button", {className: "go", textContent: STEPS[i + 1].title + " →", type: "button", onclick: () => show(i + 1)}) : el("span");
   P.append(el("div", {className: "nav-foot"}, [prev, next]));
@@ -472,7 +476,7 @@ async function refresh() {
       [el("span", {className: "n", textContent: String(i).padStart(2, "0")}), el("span", {}, [el("b", {textContent: s.title}), el("small", {textContent: s.file})])])])));
   show(current);
 }
-window.onhashchange = () => { const i = parseInt(location.hash.slice(1)); if (i >= 0 && i < STEPS.length && i !== current) show(i); };
+window.onhashchange = () => { const i = location.hash === "#help" ? "help" : parseInt(location.hash.slice(1)); if ((i === "help" || i >= 0 && i < STEPS.length) && i !== current) show(i); };
 
 refresh().then(async () => {  // a job started before a page reload keeps streaming
   const j = await api("/api/job?from=0");
