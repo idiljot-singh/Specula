@@ -14,6 +14,20 @@ From every CVE in the world to the few that matter to *your* organisation, with 
 
 *Specula* is Latin for a watchtower. It watches the global vulnerability feed and tells you what, in your estate, needs action now, and why.
 
+**[Live page →](https://idiljot-singh.github.io/Specula/)**
+
+## Showcase
+
+A dark, futuristic interface: the console is a funnel that narrows every CVE in the world down to the few that need action, and a dotted "thinking orb" scrambles and clicks back into place while the pipeline works.
+
+![Specula console: the step rail is a funnel from broad to precise, with live counts per stage](docs/img/console.png)
+
+| Analyst dashboard | Public landing page |
+|---|---|
+| ![Analyst dashboard with tier cards and the ranked findings table](docs/img/dashboard.png) | ![Landing page with the dotted orb behind the hero](docs/img/landing.png) |
+
+<sub>Screenshots use the bundled Example Organisation, not real data.</sub>
+
 ## Why
 
 About 40,000 CVEs are published every year. Most teams rank them by CVSS, which measures how bad a flaw *could* be, not whether anyone is using it against *you*. Specula answers three questions instead:
